@@ -3,7 +3,8 @@ import json
 import lief
 import hashlib
 
-def parse_to_json(file_names):
+# 나중에 돌릴 때는 try 넣어야 할 수도 있음
+def parse_to_json(file_names: list) -> list:
     """
     파일 이름 목록을 넣으면 수집한 데이터와 비슷한 json 형태로 변환합니다.
     :param file_names: 경로를 포함한 실행 파일 목록입니다.
@@ -76,7 +77,12 @@ def parse_to_json(file_names):
     return json_files
 
 
-def save_to_jsonl(json_files, path):
+def save_to_jsonl(json_files: list, path: str) -> None:
+    """
+    생성된 json_files를 jsonl 파일로 저장
+    :param json_files: parse_to_json으로 생성된 jsonl_files
+    :param path: 파일 이름을 포함한 저장 경로
+    """
     with open(path, 'w') as file:
         for json_file in json_files:
             file.write(json_file)
@@ -85,6 +91,6 @@ def save_to_jsonl(json_files, path):
 
 # 예시
 if __name__ == '__main__':
-    file_names = ['C:/Windows/py.exe', 'C:/Windows/explorer.exe']
+    file_names = ['C:/Windows/py.exe', 'C:/Windows/explorer.exe', 'C:/Users/user/Desktop/minigame.exe']
     json_files = parse_to_json(file_names)
     save_to_jsonl(json_files, 'C:/Users/user/created_features.jsonl')
