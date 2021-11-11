@@ -99,7 +99,6 @@ def file2json(file_names: list, save_path: str, print_result=1) -> list:
         for json_file in json_files:
             file.write(json_file)
             file.write('\n')
-        file.write('\b')
     print(save_path, '에 jsonl 파일이 저장되었습니다.')
 
     if print_result == 1:
@@ -157,7 +156,6 @@ def jsonl2df(file_names: list, save_path: str) -> pd.DataFrame:
                 table['h_timestamp'].append(line_json['header']['coff']['timestamp'])
 
     df = pd.DataFrame(table)
-
     df.to_csv(save_path, index=False)
     print(save_path, '에 csv 파일이 저장되었습니다.')
 
@@ -224,23 +222,24 @@ def reduce_features_for_train(file_name: str, save_path: str, save_path_props: s
     label = df['label']
 
     scaler = StandardScaler()
-    features_df = pd.DataFrame(scaler.fit_transform(features_df), columns=features_df.columns)
+    features_df = pd.DataFrame(scaler.fit_transform(features_df), index=df.index, columns=features_df.columns)
 
     selected_features = _get_variables_by_variable_selection(features_df, label)
     features_df = features_df[selected_features]
 
     pca = PCA(n_components=n_pca)
     pca_arr = pca.fit_transform(features_df, label)
-    pca_df = pd.DataFrame(pca_arr, columns=[f'pca{i+1}' for i in range(n_pca)])
+    pca_df = pd.DataFrame(pca_arr, index=df.index, columns=[f'pca{i+1}' for i in range(n_pca)])
     pca_df['label'] = label.tolist()
 
     reduce_features_props = [selected_features, scaler, n_pca, pca]
 
-    pca_df.to_csv(save_path, index=False)
+    pca_df.to_csv(save_path)
     print(save_path, '에 csv 파일이 저장되었습니다.')
 
-    pickle.dumps(save_path_props, reduce_features_props)
-    print(save_path_props, '에 properties(pickle) 파일이 저장되었습니다.')
+    with open(save_path_props, 'wb') as file:
+        pickle.dump(reduce_features_props, file)
+        print(save_path_props, '에 properties(pickle) 파일이 저장되었습니다.')
 
     return pca_df
 
@@ -253,21 +252,22 @@ def reduce_features_for_test(file_name: str, props_file_path: str, save_path: st
     :param props_file_path: reduce_features_for_train에서 생성된 properties 파일의 경로입니다.
     :return: 생성된 pca_df입니다.
     """
-    selected_features, scaler, n_pca, pca = pickle.load(props_file_path)
+    with open(props_file_path, 'rb') as file:
+        selected_features, scaler, n_pca, pca = pickle.load(file)
 
     df = pd.read_csv(file_name)
     df = df.set_index('sha256')
     features_df = df.drop('label', axis=1)
     label = df['label']
 
-    features_df = pd.DataFrame(scaler.transform(features_df), columns=features_df.columns)
+    features_df = pd.DataFrame(scaler.transform(features_df), index=df.index, columns=features_df.columns)
     features_df = features_df[selected_features]
 
-    pca_arr = pca.transform(features_df, label)
-    pca_df = pd.DataFrame(pca_arr, columns=[f'pca{i+1}' for i in range(n_pca)])
+    pca_arr = pca.transform(features_df)
+    pca_df = pd.DataFrame(pca_arr, index=df.index, columns=[f'pca{i+1}' for i in range(n_pca)])
     pca_df['label'] = label.tolist()
 
-    pca_df.to_csv(save_path, index=False)
+    pca_df.to_csv(save_path)
     print(save_path, '에 csv 파일이 저장되었습니다.')
 
     return pca_df
