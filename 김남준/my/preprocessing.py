@@ -206,7 +206,7 @@ def _get_variables_by_variable_selection(features_df: pd.DataFrame, label: pd.Se
     return selected_variables
 
 
-def reduce_features_for_train(file_name: str, save_path: str, save_path_props: str, n_pca=8) -> pd.DataFrame:
+def reduce_features_for_train(file_name: str, save_path: str, save_path_props: str, n_pca=10) -> pd.DataFrame:
     """
     변수 선택법과 PCA를 이용하여 features의 개수를 줄입니다.
     train data를 위한 함수입니다.
