@@ -1,121 +1,14 @@
-"""
-각 함수마다 save_path가 유효한지 확인해봐야 할 듯
-"""
-import os
 import json
-import lief
-import pickle
-import hashlib
 import pandas as pd
 import statsmodels.api as sm
 from collections import defaultdict
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-
-def file2json(file_names: list, save_path: str, print_result=1) -> list:
-    """
-    파일 이름 목록을 넣으면 수집한 데이터와 비슷한 json 형태로 변환합니다.
-    :param file_names: 경로를 포함한 실행 파일 목록입니다.
-    :param save_path: save_path 지정 시 생성한 json 파일들을 jsonl 포맷으로 저장합니다.
-    :param print_result: {0: 출력 안함, 1: 개수만 출력, 2: 파일 리스트 출력}
-    :return: json 파일의 리스트입니다.
-    """
-    json_files = list()
-    success_list = list()
-    failure_list = list()
-
-    for file_name in file_names:
-        try:
-            js = {'label': -1, 'datadirectories': [], 'general': {}, 'header': {'coff': {}, 'optional':{}},
-                  'imports': {}, 'section': {'sections': []}}
-
-            binary = lief.parse(file_name)
-
-            for data_directory in binary.data_directories:
-                dic = {'name': data_directory.type.name,
-                       'size': data_directory.size,
-                       'virtual_address': data_directory.rva}
-                js['datadirectories'].append(dic)
-
-            js['exports'] = binary.exported_functions
-
-            js['general']['exports'] = len(binary.exported_functions)
-            js['general']['has_debug'] = int(binary.has_debug)
-            js['general']['has_relocations'] = int(binary.has_relocations)
-            js['general']['has_resources'] = int(binary.has_resources)
-            js['general']['has_signature'] = int(binary.has_signatures)
-            js['general']['has_tls'] = int(binary.has_tls)
-            js['general']['imports'] = len(binary.imports)
-            js['general']['size'] = os.path.getsize(file_name)
-            js['general']['symbols'] = len(binary.symbols)
-            js['general']['vsize'] = binary.virtual_size
-
-            js['header']['coff']['characteristics'] = [x.name for x in binary.header.characteristics_list]
-            js['header']['coff']['machine'] = binary.header.machine.name
-            js['header']['coff']['timestamp'] = binary.header.time_date_stamps
-
-            js['header']['optional']['dll_characteristics'] = [x.name for x in binary.optional_header.dll_characteristics_lists]
-            js['header']['optional']['magic'] = binary.optional_header.magic.name
-            js['header']['optional']['major_image_version'] = binary.optional_header.major_image_version
-            js['header']['optional']['major_linker_version'] = binary.optional_header.major_linker_version
-            js['header']['optional']['major_operating_system_version'] = binary.optional_header.major_operating_system_version
-            js['header']['optional']['major_subsystem_version'] = binary.optional_header.major_subsystem_version
-            js['header']['optional']['minor_image_version'] = binary.optional_header.minor_image_version
-            js['header']['optional']['minor_linker_version'] = binary.optional_header.minor_linker_version
-            js['header']['optional']['minor_operating_system_version'] = binary.optional_header.minor_operating_system_version
-            js['header']['optional']['minor_subsystem_version'] = binary.optional_header.minor_subsystem_version
-            js['header']['optional']['sizeof_code'] = binary.optional_header.sizeof_code
-            js['header']['optional']['sizeof_headers'] = binary.optional_header.sizeof_headers
-            js['header']['optional']['sizeof_heap_commit'] = binary.optional_header.sizeof_heap_commit
-            js['header']['optional']['subsystem'] = binary.optional_header.subsystem.name
-
-            for imp_lib in binary.imports:
-                dic = dict()
-                dic[imp_lib.name] = [func.name for func in imp_lib.entries]
-                js['imports'].update(dic)
-
-            js['name'] = binary.name
-
-            js['section']['entry'] = binary.sections[0].name
-            for section in binary.sections:
-                dic = {'name': section.name,
-                       'entropy': section.entropy,
-                       'props': [x.name for x in section.characteristics_lists],
-                       'size': section.size,
-                       'vsize': section.virtual_size}
-                js['section']['sections'].append(dic)
-
-            with open(file_name, 'rb') as file:
-                js['sha256'] = hashlib.sha256(file.read()).hexdigest()
-
-            json_files.append(json.dumps(js, sort_keys=True))
-            success_list.append(file_name)
-
-        except Exception as err:
-            failure_list.append(file_name)
-
-    with open(save_path, 'w') as file:
-        for json_file in json_files:
-            file.write(json_file)
-            file.write('\n')
-    print(save_path, '에 jsonl 파일이 저장되었습니다.')
-
-    if print_result == 1:
-        print(f'성공 {len(success_list)}개')
-        print(f'실패 {len(failure_list)}개')
-    elif print_result == 2:
-        print(f'성공 {len(success_list)}개', success_list)
-        print(f'실패 {len(failure_list)}개', failure_list)
-
-    return json_files
-
-
-def jsonl2df(file_names: list, save_path: str) -> pd.DataFrame:
+def jsonl2df(file_names: list) -> pd.DataFrame:
     """
     jsonl 파일에서 특정 컬럼을 추출하여 pd.DataFrame 형태로 변환합니다.
     :param file_names: 경로를 포함한 jsonl 파일 목록입니다.
-    :param save_path: save_path 지정 시 생성한 DataFrame을 csv 포맷으로 저장합니다.
     :return: 변환한 DataFrame입니다.
     """
     table = defaultdict(list)
@@ -156,8 +49,6 @@ def jsonl2df(file_names: list, save_path: str) -> pd.DataFrame:
                 table['h_timestamp'].append(line_json['header']['coff']['timestamp'])
 
     df = pd.DataFrame(table)
-    df.to_csv(save_path, index=False)
-    print(save_path, '에 csv 파일이 저장되었습니다.')
 
     return df
 
@@ -206,17 +97,15 @@ def _get_variables_by_variable_selection(features_df: pd.DataFrame, label: pd.Se
     return selected_variables
 
 
-def reduce_features_for_train(file_name: str, save_path: str, save_path_props: str, n_pca=10) -> pd.DataFrame:
+def reduce_features_for_train(df: pd.DataFrame, save_path: str, n_pca=9) -> (pd.DataFrame, list):
     """
     변수 선택법과 PCA를 이용하여 features의 개수를 줄입니다.
     train data를 위한 함수입니다.
-    :param file_name: json2df를 통해 생성된 csv 파일의 경로입니다.
+    :param df: 분석에 필요한 features를 DataFrame 형태로 추출한 데이터입니다.
     :param save_path: csv 파일을 저장할 경로입니다.
-    :param save_path_props: properties 파일을 저장할 경로입니다.
     :param n_pca: PCA components 개수를 결정합니다.
-    :return: 생성된 pca_df입니다.
+    :return: 생성된 pca_df와 properties입니다.
     """
-    df = pd.read_csv(file_name)
     df = df.set_index('sha256')
     features_df = df.drop('label', axis=1)
     label = df['label']
@@ -237,25 +126,20 @@ def reduce_features_for_train(file_name: str, save_path: str, save_path_props: s
     pca_df.to_csv(save_path)
     print(save_path, '에 csv 파일이 저장되었습니다.')
 
-    with open(save_path_props, 'wb') as file:
-        pickle.dump(reduce_features_props, file)
-        print(save_path_props, '에 properties(pickle) 파일이 저장되었습니다.')
-
-    return pca_df
+    return pca_df, reduce_features_props
 
 
-def reduce_features_for_test(file_name: str, props_file_path: str, save_path: str) -> pd.DataFrame:
+def reduce_features_for_test(df: pd.DataFrame, props: tuple, save_path: str) -> pd.DataFrame:
     """
     변수 선택법과 PCA를 이용하여 features의 개수를 줄입니다.
     test data를 위한 함수이며 reduce_features_for_train이 선행되어야 합니다.
-    :param file_name: json2df를 통해 생성된 csv 파일의 경로입니다.
-    :param props_file_path: reduce_features_for_train에서 생성된 properties 파일의 경로입니다.
+    :param df: 분석에 필요한 features를 DataFrame 형태로 추출한 데이터입니다.
+    :param props: reduce_features_for_train에서 생성된 properties입니다.
+    :param save_path: csv 파일을 저장할 경로입니다.
     :return: 생성된 pca_df입니다.
     """
-    with open(props_file_path, 'rb') as file:
-        selected_features, scaler, n_pca, pca = pickle.load(file)
+    selected_features, scaler, n_pca, pca = props
 
-    df = pd.read_csv(file_name)
     df = df.set_index('sha256')
     features_df = df.drop('label', axis=1)
     label = df['label']
