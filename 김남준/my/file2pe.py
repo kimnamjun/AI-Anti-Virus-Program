@@ -3,6 +3,7 @@ import json
 import lief
 import hashlib
 
+
 def file2pe(file_names: list, save_path: str, verbose=1) -> list:
     """
     파일 이름 목록을 넣으면 수집한 데이터와 비슷한 json 형태로 변환합니다.

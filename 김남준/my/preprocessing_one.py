@@ -5,6 +5,7 @@ from collections import defaultdict
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+
 def jsonl2df(file_names: list) -> pd.DataFrame:
     """
     jsonl 파일에서 특정 컬럼을 추출하여 pd.DataFrame 형태로 변환합니다.
@@ -49,6 +50,7 @@ def jsonl2df(file_names: list) -> pd.DataFrame:
                 table['h_timestamp'].append(line_json['header']['coff']['timestamp'])
 
     df = pd.DataFrame(table)
+    # df = df[df['label'] != -1]
 
     return df
 
@@ -97,12 +99,11 @@ def _get_variables_by_variable_selection(features_df: pd.DataFrame, label: pd.Se
     return selected_variables
 
 
-def reduce_features_for_train(df: pd.DataFrame, save_path: str, n_pca=9) -> (pd.DataFrame, list):
+def reduce_features_for_train(df: pd.DataFrame, n_pca=9) -> (pd.DataFrame, list):
     """
     변수 선택법과 PCA를 이용하여 features의 개수를 줄입니다.
     train data를 위한 함수입니다.
     :param df: 분석에 필요한 features를 DataFrame 형태로 추출한 데이터입니다.
-    :param save_path: csv 파일을 저장할 경로입니다.
     :param n_pca: PCA components 개수를 결정합니다.
     :return: 생성된 pca_df와 properties입니다.
     """
@@ -120,22 +121,18 @@ def reduce_features_for_train(df: pd.DataFrame, save_path: str, n_pca=9) -> (pd.
     pca_arr = pca.fit_transform(features_df, label)
     pca_df = pd.DataFrame(pca_arr, index=df.index, columns=[f'pca{i+1}' for i in range(n_pca)])
     pca_df['label'] = label.tolist()
+    pca_df = pca_df.reset_index()
 
-    reduce_features_props = [selected_features, scaler, n_pca, pca]
-
-    pca_df.to_csv(save_path)
-    print(save_path, '에 csv 파일이 저장되었습니다.')
-
+    reduce_features_props = selected_features, scaler, n_pca, pca
     return pca_df, reduce_features_props
 
 
-def reduce_features_for_test(df: pd.DataFrame, props: tuple, save_path: str) -> pd.DataFrame:
+def reduce_features_for_test(df: pd.DataFrame, props: tuple) -> pd.DataFrame:
     """
     변수 선택법과 PCA를 이용하여 features의 개수를 줄입니다.
     test data를 위한 함수이며 reduce_features_for_train이 선행되어야 합니다.
     :param df: 분석에 필요한 features를 DataFrame 형태로 추출한 데이터입니다.
     :param props: reduce_features_for_train에서 생성된 properties입니다.
-    :param save_path: csv 파일을 저장할 경로입니다.
     :return: 생성된 pca_df입니다.
     """
     selected_features, scaler, n_pca, pca = props
@@ -150,8 +147,6 @@ def reduce_features_for_test(df: pd.DataFrame, props: tuple, save_path: str) -> 
     pca_arr = pca.transform(features_df)
     pca_df = pd.DataFrame(pca_arr, index=df.index, columns=[f'pca{i+1}' for i in range(n_pca)])
     pca_df['label'] = label.tolist()
-
-    pca_df.to_csv(save_path)
-    print(save_path, '에 csv 파일이 저장되었습니다.')
+    pca_df = pca_df.reset_index()
 
     return pca_df
