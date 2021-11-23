@@ -1,0 +1,28 @@
+<?php
+$source = $_FILES['profile']['tmp_name'];
+$dest = "./".basename($_FILES['profile']['name']);
+move_uploaded_file($source, $dest);
+?>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+
+<form action="/predict" method="post" enctype="multipart/form-data">
+    <p>파일을 선택하거나 끌어올리세요</p>
+    <p>FILE <input type="file" name="file"></p>
+    <p><input type="submit"></p>
+</form>
+
+<p>drag and drop your image!</p>
+<div class="content">
+</div>
+
+<script type="text/javascript" src="../static/script.js"></script>
+</body>
+</html>
