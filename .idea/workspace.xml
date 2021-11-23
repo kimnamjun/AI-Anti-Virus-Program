@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b66bae3b-91ef-4cd6-9894-e2b84c375a55" name="Changes" comment="" />
+    <list default="true" id="b66bae3b-91ef-4cd6-9894-e2b84c375a55" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/web_server/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/my.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/my_packages/file2pe.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/my_packages/preprocessing_one.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/my_packages/util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/templates/error.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/templates/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_server/templates/result.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/test_features.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_0.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_1.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_2.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_3.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_4.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_5.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/create_jsonl/created_features.jsonl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/data/one_test_df.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/data/one_train_df.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/data/two_test_df.pickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/data/two_train_df.pickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/example_files/example.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/models/one_model.pickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/models/two_model.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/properties/one_props.pickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -19,6 +61,9 @@
     </file-type-list>
   </component>
   <component name="ProjectId" id="2127buHE01BZHHzhyWq7ON4umJc" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -26,7 +71,42 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/web_server" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.splitter.proportion" value="0.21428572" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\user\PycharmProjects\AI-Anti-Virus-Program\templates" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\user\PycharmProjects\ava_app\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
