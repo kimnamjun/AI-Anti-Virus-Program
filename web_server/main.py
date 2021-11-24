@@ -65,5 +65,6 @@ def predict():
 def error(error):
     return render_template('/error.html', error_code=404), 404
 
-# print('http://127.0.0.1:5021/test')
-serve(app, host='0.0.0.0', port='5021')
+
+print('http://127.0.0.1:5021')
+serve(app, host='localhost', port='5021')
