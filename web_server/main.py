@@ -1,9 +1,13 @@
+import time
+
 import my
+
 import os
 import pickle
 from flask import Flask, render_template, request
 from waitress import serve
 from werkzeug.utils import secure_filename
+import boto3
 
 app = Flask(__name__)
 
@@ -11,9 +15,6 @@ app = Flask(__name__)
 def go_to_main():
     return render_template('main.html')
 
-@app.route('/test')
-def go_to_test():
-    return render_template('test.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -40,6 +41,20 @@ def predict():
     df = my.preprocessing_one.json2df(temp_file_name1)
     df = my.preprocessing_one.reduce_features(df, props)
     df = df.set_index('sha256')
+
+    # data storage
+    df.to_csv('./dataset/temp/pca_df.csv', index=True, header=True)
+
+    s3 = boto3.client('s3')
+    tm = time.localtime(time.time())
+    # AWS s3에 파일 업로드
+    # 첫번째 매개 변수 : 로컬에서 올릴 파일이름 file.filename (업로드한 파일의 원래 이름)
+    # 두번째 매개 변수 : s3 버킷 이름 ( 본인의 버켓 이름을 입력할 것)
+    # 세번째 매개 변수 : 버킷에 저장될 파일 이름. ( 업로드한 파일의 원래 이름)
+    s3.upload_file("./dataset/temp/temp.json", 'ava-data-json', '파일명' + time.strftime('%Y-%m-%d_%I-%M-%S', tm) + '.json')
+
+    my.csv2ddb.csv_to_dynamo()
+
     x, y = df.drop('label', axis=1), df['label']
     result = model.predict(x)[0]
 
@@ -50,5 +65,5 @@ def predict():
 def error(error):
     return render_template('/error.html', error_code=404), 404
 
-print('http://127.0.0.1:5021')
-serve(app, host='localhost', port='5021')
+# print('http://127.0.0.1:5021/test')
+serve(app, host='0.0.0.0', port='5021')
