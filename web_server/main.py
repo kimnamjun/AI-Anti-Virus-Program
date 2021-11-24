@@ -1,5 +1,4 @@
 import my
-
 import os
 import pickle
 from flask import Flask, render_template, request
@@ -51,5 +50,5 @@ def predict():
 def error(error):
     return render_template('/error.html', error_code=404), 404
 
-print('http://127.0.0.1:5021/test')
+print('http://127.0.0.1:5021')
 serve(app, host='localhost', port='5021')

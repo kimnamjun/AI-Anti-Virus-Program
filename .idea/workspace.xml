@@ -2,40 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b66bae3b-91ef-4cd6-9894-e2b84c375a55" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/web_server/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/my.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/my_packages/file2pe.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/my_packages/preprocessing_one.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/my_packages/util.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/templates/error.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/templates/main.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_server/templates/result.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/test_features.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_0.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_1.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_2.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_3.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_4.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/collected_jsonl/train_features_5.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/create_jsonl/created_features.jsonl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/data/one_test_df.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/data/one_train_df.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/data/two_test_df.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/data/two_train_df.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/example_files/example.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/models/one_model.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/models/two_model.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/properties/one_props.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
