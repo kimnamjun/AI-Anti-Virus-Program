@@ -1,0 +1,7 @@
+#loading {
+    width: 100px;
+    height: 100px;
+    display: none;
+    background: url(../static/ajax-loader.gif) no-repeat;
+    cursor: wait;
+}
