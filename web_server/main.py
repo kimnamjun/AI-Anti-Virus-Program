@@ -49,8 +49,8 @@ def predict():
     tm = time.localtime(time.time())
     # AWS s3에 파일 업로드
     # 첫번째 매개 변수 : 로컬에서 올릴 파일이름 file.filename (업로드한 파일의 원래 이름)
-    # 두번째 매개 변수 : s3 버킷 이름 ( 본인의 버켓 이름을 입력할 것)
-    # 세번째 매개 변수 : 버킷에 저장될 파일 이름. ( 업로드한 파일의 원래 이름)
+    # 두번째 매개 변수 : s3 버킷 이름 (본인의 버켓 이름을 입력할 것)
+    # 세번째 매개 변수 : 버킷에 저장될 파일 이름. (업로드한 파일의 원래 이름)
     s3.upload_file("./dataset/temp/temp.json", 'ava-data-json', '파일명' + time.strftime('%Y-%m-%d_%I-%M-%S', tm) + '.json')
 
     my.csv2ddb.csv_to_dynamo()
