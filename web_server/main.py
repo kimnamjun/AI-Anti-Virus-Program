@@ -62,7 +62,7 @@ def predict():
 
 @app.errorhandler(404)
 def error(error):
-    return render_template('/error.html', error_code=404), 404
+    return render_template('/error.html', error_code=404, error_msg='찾을 수 없는 페이지'), 404
 
 
 print('http://127.0.0.1:5021')
