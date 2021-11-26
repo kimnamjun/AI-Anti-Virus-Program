@@ -7,7 +7,7 @@ path = './dataset/temp/'
 s3 = boto3.client('s3')
 
 
-def save_in_s3(obj, bucket: str, filename: str):
+def save_to_s3(obj, bucket_name: str, filename: str):
     try:
         if filename.count('.') != 1:
             raise FileNameException()
@@ -20,7 +20,7 @@ def save_in_s3(obj, bucket: str, filename: str):
             with open(path + name, 'wb') as file:
                 pickle.dump(obj, file)
 
-        s3.upload_file(path + name, bucket, filename)
+        s3.upload_file(path + name, bucket_name, filename)
 
     finally:
         if os.path.isfile(path + 'temp.csv'):

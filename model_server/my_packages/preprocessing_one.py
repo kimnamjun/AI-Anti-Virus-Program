@@ -15,7 +15,7 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
     """
     s3 안의 jsonl 파일에서 특정 컬럼을 추출하여 pd.DataFrame 형태로 변환합니다.
     :param file_names: 경로를 포함한 jsonl 파일 목록입니다.
-    :return: 변환한 DataFrame 입니다.
+    :return: 변환한 DataFrame입니다.
     """
     table = defaultdict(list)
 
