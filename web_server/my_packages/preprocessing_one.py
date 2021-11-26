@@ -3,7 +3,7 @@ import pandas as pd
 from collections import defaultdict
 
 
-def json2df(file_name: str) -> pd.DataFrame:
+def convert_json_to_df(file_name: str) -> pd.DataFrame:
     table = defaultdict(list)
 
     with open(file_name) as file:

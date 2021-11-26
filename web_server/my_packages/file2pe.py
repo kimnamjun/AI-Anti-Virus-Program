@@ -4,7 +4,7 @@ import lief
 import hashlib
 
 
-def file2pe(file_name: str) -> str:
+def convert_file_to_pe(file_name: str) -> str:
     """
     파일 경로를 넣으면 PE 형식의 json 형태로 변환합니다.
     :param file_name: 파일명을 포함한 파일의 경로입니다.

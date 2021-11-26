@@ -4,57 +4,58 @@ from datetime import datetime
 from flask import Flask, render_template, request
 from waitress import serve
 from werkzeug.utils import secure_filename
-import boto3
 
 
 app = Flask(__name__)
-s3c = boto3.client('s3')
 
 
 @app.route('/')
-def go_to_main():
+def index():
     return render_template('main.html')
 
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    tm = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    try:
+        # setting
+        tm = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        props = my.aws.load_from_s3('one/props.pickle', 'ava-data-model')
+        model = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
 
-    # file upload
-    file = request.files['file']
-    filename = secure_filename(file.filename)
-    filename_path = os.path.join('./dataset/temp', filename)
-    file.save(os.path.join(filename_path))
+        # file upload
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        filename_path = os.path.join('./dataset/temp', filename)
+        file.save(os.path.join(filename_path))
 
-    # file to json
-    json_file = my.file2pe.file2pe(filename_path)
-    if not json_file:
-        return render_template('/error', error_code=1, error_msg='파일 변환 실패')
-    temp_file_name1 = './dataset/temp/temp.json'
-    with open(temp_file_name1, 'w') as file:
-        file.write(json_file)
+        # file to json
+        json_file = my.file2pe.convert_file_to_pe(filename_path)
+        if not json_file:
+            return render_template('/error', error_code=1, error_msg='파일 변환 실패')
+        temp_file_name1 = './dataset/temp/temp.json'
+        with open(temp_file_name1, 'w') as file:
+            file.write(json_file)
 
-    # predict one
-    props = my.aws.load_from_s3('one/props.pickle', 'ava-data-model')
-    model = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
-    # with open('./model/properties.pickle', 'rb') as props, open('./model/rf_model.pickle', 'rb') as model:
-    #     props = pickle.load(props)
-    #     model = pickle.load(model)
+        # json to df
+        df = my.preprocessing_one.convert_json_to_df(temp_file_name1)
+        df = my.preprocessing_one.reduce_features(df, props)
+        df = df.set_index('sha256')
+        df.to_csv('./dataset/temp/pca_df.csv', header=True)  # header=True 맞나여?
 
-    df = my.preprocessing_one.json2df(temp_file_name1)
-    df = my.preprocessing_one.reduce_features(df, props)
-    df = df.set_index('sha256')
+        # predict
+        x, y = df.drop('label', axis=1), df['label']
+        result = model.predict(x)[0]
 
-    x, y = df.drop('label', axis=1), df['label']
-    result = model.predict(x)[0]
+        # save to aws
+        my.aws.save_to_s3('./dataset/temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
+        my.aws.save_to_dynamo('./dataset/temp/pca_df.csv', 'AVA-01')
 
-    # data storage
-    df.to_csv('./dataset/temp/pca_df.csv', index=True, header=True)
-
-    s3c.upload_file(temp_file_name1, 'ava-data-json', f'{filename}_{tm}.json')
-
-    my.csv2ddb.csv_to_dynamo()
-
+    except Exception as err:
+        raise err
+    finally:
+        path = './dataset/temp/'
+        for filename in os.listdir(path):
+            os.remove(path + filename)
 
     return render_template('result.html', result=result)
 
