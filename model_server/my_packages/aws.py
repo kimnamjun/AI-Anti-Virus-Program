@@ -3,7 +3,7 @@ import pickle
 import boto3
 
 
-path = './dataset/temp/'
+path = './temp/'
 s3 = boto3.client('s3')
 
 
