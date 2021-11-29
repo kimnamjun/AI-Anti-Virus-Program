@@ -1,5 +1,8 @@
+import pandas as pd
+
 import my
 import os
+import pickle
 from datetime import datetime
 from flask import Flask, render_template, request
 from waitress import serve
@@ -19,8 +22,10 @@ def predict():
     try:
         # setting
         tm = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        props = my.aws.load_from_s3('one/props.pickle', 'ava-data-model')
-        model = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
+        props_one = my.aws.load_from_s3('one/properties.pickle', 'ava-data-model')
+        model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
+        props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
+        model_two = my.aws.load_from_s3('two/model.pickle', 'ava-data-model')
 
         # file upload
         file = request.files['file']
@@ -32,22 +37,26 @@ def predict():
         json_file = my.file2pe.convert_file_to_pe(filename_path)
         if not json_file:
             return render_template('/error', error_code=1, error_msg='파일 변환 실패')
-        temp_file_name1 = './dataset/temp/temp.json'
-        with open(temp_file_name1, 'w') as file:
+        json_file_name = './dataset/temp/temp.json'
+        with open(json_file_name, 'w') as file:
             file.write(json_file)
 
         # json to df
-        df = my.preprocessing_one.convert_json_to_df(temp_file_name1)
-        df = my.preprocessing_one.reduce_features(df, props)
-        df = df.set_index('sha256')
-        df.to_csv('./dataset/temp/pca_df.csv', header=True)  # header=True 맞나여?
+        df1 = my.preprocessing_one.convert_json_to_df(json_file_name)
+        df1 = my.preprocessing_one.reduce_features(df1, props_one)
+        df1.to_csv('./dataset/temp/df_one.csv', index=False)
 
         # predict
-        x, y = df.drop('label', axis=1), df['label']
-        result = model.predict(x)[0]
+        x1 = df1.drop(['sha256', 'label'], axis=1)
+        result = model_one.predict(x1)[0]
+
+        df2 = my.preprocessing_two.preprocess(json_file_name, props_two)
+        with open('./dataset/temp/df_two.pickle', 'wb') as file:
+            pickle.dump(df2, file)
 
         # save to aws
         my.aws.save_to_s3('./dataset/temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
+        my.aws.save_to_dynamo('./dataset/temp/df_one.csv', 'AVA-01')
         my.aws.save_to_dynamo('./dataset/temp/pca_df.csv', 'AVA-01')
 
     except Exception as err:
