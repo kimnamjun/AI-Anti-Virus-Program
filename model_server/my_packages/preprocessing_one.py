@@ -29,8 +29,10 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
                 break
             line_json = json.loads(line)
 
-            table['sha256'].append(line_json['sha256'])
+            if line_json['label'] == -1:
+                continue
             table['label'].append(line_json['label'])
+            table['sha256'].append(line_json['sha256'])
 
             table['g_exports'].append(line_json['general']['exports'])
             table['g_has_debug'].append(line_json['general']['has_debug'])
@@ -63,11 +65,7 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
             table['s_entropy'].append(1 if sum([0 if 0 < s < 7 else 1 for s in sec_entropy]) else 0)
             table['s_size'].append(1 if sum([0 if s != 0 else 1 for s in sec_size]) else 0)
 
-    df = pd.DataFrame(table)
-    df = df[df['label'] != -1]
-    df.reset_index(drop=True, inplace=True)
-
-    return df
+    return pd.DataFrame(table)
 
 
 def _get_variables_by_variable_selection(features_df: pd.DataFrame, label: pd.Series) -> list:
