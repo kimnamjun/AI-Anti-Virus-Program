@@ -56,8 +56,16 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
             table['h_sizeof_heap_commit'].append(line_json['header']['optional']['sizeof_heap_commit'])
             table['h_timestamp'].append(line_json['header']['coff']['timestamp'])
 
+            sec_entropy, sec_size = list(), list()
+            for section in line_json['section']['sections']:
+                sec_entropy.append(section['entropy'])
+                sec_size.append(section['size'])
+            table['s_entropy'].append(1 if sum([0 if 0 < s < 7 else 1 for s in sec_entropy]) else 0)
+            table['s_size'].append(1 if sum([0 if s != 0 else 1 for s in sec_size]) else 0)
+
     df = pd.DataFrame(table)
     df = df[df['label'] != -1]
+    df.reset_index(drop=True, inplace=True)
 
     return df
 
@@ -132,3 +140,28 @@ def reduce_features_for_train(df: pd.DataFrame, n_pca=9) -> (pd.DataFrame, list)
 
     reduce_features_props = selected_features, scaler, n_pca, pca
     return pca_df, reduce_features_props
+
+
+def reduce_features_for_test(df: pd.DataFrame, props: tuple) -> pd.DataFrame:
+    """
+    변수 선택법과 PCA를 이용하여 features의 개수를 줄입니다.
+    test data를 위한 함수입니다.
+    :param df: 분석에 필요한 features를 DataFrame 형태로 추출한 데이터입니다.
+    :param props: reduce_features_for_train 실행 결과 생성된 properties입니다.
+    :return: 생성된 pca_df입니다.
+    """
+    selected_features, scaler, n_pca, pca = props
+
+    df = df.set_index('sha256')
+    features_df = df.drop('label', axis=1)
+    label = df['label']
+
+    features_df = pd.DataFrame(scaler.transform(features_df), index=df.index, columns=features_df.columns)
+    features_df = features_df[selected_features]
+
+    pca_arr = pca.transform(features_df)
+    pca_df = pd.DataFrame(pca_arr, index=df.index, columns=[f'pca{i+1}' for i in range(n_pca)])
+    pca_df['label'] = label.tolist()
+    pca_df = pca_df.reset_index()
+
+    return pca_df
