@@ -8,6 +8,7 @@ import pandas as pd
 s3 = boto3.resource('s3')
 pattern = re.compile(r'\W*(\w+)')
 
+
 def convert_json_to_df(file_names: list) -> pd.DataFrame:
     """
     s3 안의 jsonl 파일에서 특정 컬럼을 추출하여 pd.DataFrame 형태로 변환합니다.
@@ -44,11 +45,13 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
     return pd.DataFrame(table)
 
 
+# 희소행렬방식을 사용한다면 max_length를 이용한 전처리가 필요한가도 재검토
 def preprocess(train_df, test_df, max_length=300) -> tuple:
     """
     API 함수 관련하여 데이터 전처리를 수행합니다.
     :param train_df: 학습용 데이터입니다.
     :param test_df: 검증용 데이터입니다.
+    :param max_length: 하나의 파일이 가질 수 있는 최대의 API 함수 개수입니다.
     :return: 변환된 학습용 데이터, 검증용 데이터와 properties입니다.
     """
     # max_length 이상의 함수를 갖는 행 버리기
