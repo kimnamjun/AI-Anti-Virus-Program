@@ -18,19 +18,19 @@ def load_from_s3(filename: str, bucket_name: str):
     return content
 
 
-def save_to_s3(filename_in_local, bucket_name: str, filename_in_s3: str):
-    if filename_in_s3.count('.') != 1:
-        raise FileNameException(msg='파일 이름을 확인하세요. (.)dot은 하나만 포함되어야 합니다.')
+def save_to_s3(obj, bucket_name: str, filename_in_s3: str):
     _, extension = os.path.splitext(filename_in_s3)
-    name = 'temp' + extension
+    name = path + 'temp' + extension
 
     if extension == '.csv':
-        filename_in_local.to_csv(path + name, header=False, index=False)
+        obj.to_csv(name, header=False, index=False)
     elif extension == '.pickle':
-        with open(path + name, 'wb') as file:
-            pickle.dump(filename_in_local, file)
+        with open(name, 'wb') as file:
+            pickle.dump(obj, file)
+    else:
+        FileNameException(msg=f'이게 왜 안 돼! {extension}')
 
-    s3_client.upload_file(path + name, bucket_name, filename_in_s3)
+    s3_client.upload_file(name, bucket_name, filename_in_s3)
 
 
 def save_to_dynamo(filename_in_local: str, table_name: str):

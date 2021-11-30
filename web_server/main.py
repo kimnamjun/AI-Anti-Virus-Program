@@ -2,7 +2,7 @@ import my
 import os
 import pickle
 from datetime import datetime
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 from waitress import serve
 from werkzeug.utils import secure_filename
 
@@ -13,6 +13,7 @@ model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
 props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
 vectorizer_two = my.aws.load_from_s3('two/vectorizer.pickle', 'ava-data-model')
 model_two = my.aws.load_from_s3('two/model.pickle', 'ava-data-model')
+print('Loaded successfully from s3')
 
 
 @app.route('/')
@@ -23,7 +24,6 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # setting
         tm = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 
         # file upload
@@ -54,7 +54,6 @@ def predict():
         x2 = df2.drop(['sha256', 'label'], axis=1)
         result2 = my.model.predict_two(x2, vectorizer_two, model_two)
 
-
         # save to aws
         my.aws.save_to_s3('./dataset/temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
         my.aws.save_to_dynamo('./dataset/temp/df_one.csv', 'AVA-01')
@@ -67,7 +66,14 @@ def predict():
         for filename in os.listdir(path):
             os.remove(path + filename)
 
-    return render_template('result.html', result=result1)
+    return redirect(url_for('result.html', result1=result1, result2=result2), code=307)
+
+
+@app.route('/result', methods=['POST'])
+def result():
+    result1 = request.form['result1']
+    result2 = request.form['result2']
+    return render_template('result.html', result1=result1, result2=result2)
 
 
 @app.errorhandler(404)
@@ -75,5 +81,10 @@ def error(error):
     return render_template('/error.html', error_code=404, error_msg='찾을 수 없는 페이지'), 404
 
 
-print('http://127.0.0.1:5021')
-serve(app, host='localhost', port='5021')
+@app.errorhandler(405)
+def error(error):
+    return render_template('/error.html', error_code=405, error_msg='허용되지 않은 요청'), 405
+
+
+print('Flask app is running')
+serve(app, host='0.0.0.0', port='5021')
