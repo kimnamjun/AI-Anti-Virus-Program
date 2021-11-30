@@ -9,8 +9,6 @@ s3 = boto3.client('s3')
 
 def save_to_s3(obj, bucket_name: str, filename: str):
     try:
-        if filename.count('.') != 1:
-            raise FileNameException()
         _, extension = os.path.splitext(filename)
         name = 'temp' + extension
 
