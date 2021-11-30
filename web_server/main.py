@@ -28,6 +28,7 @@ def predict():
 
         # file upload
         file = request.files['file']
+        print(type(file))
         filename = secure_filename(file.filename)
         filename_path = os.path.join('./dataset/temp', filename)
         file.save(os.path.join(filename_path))
