@@ -28,7 +28,7 @@ def save_to_s3(obj, bucket_name: str, filename: str):
 
 
 class FileNameException(Exception):
-    def __init__(self, msg='파일 이름을 확인하세요. (.)dot은 하나만 포함되어야 합니다.'):
+    def __init__(self, msg='예상치 못한 예외 상황!'):
         self.msg = msg
 
     def __str__(self):
