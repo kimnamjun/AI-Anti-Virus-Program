@@ -54,13 +54,19 @@ def save_to_dynamo(filename_in_local: str, table_name: str):
                     'pca9': row['pca9'],
                     'label': row['label']
                 })
+    elif extension == '.pickle':
+        table = ddb_resource.Table(table_name)
+        with open(filename_in_local) as file, table.batch_writer() as batch:
+            df = pickle.load(file)
+            sha256 = df['sha256']
+            imports = df['imports']
+            for irow in range(len(df.index)):
+                batch.put_item(Item={
+                    'sha256': sha256[i],
+                    'imports': imports[i]
+                })
     else:
-        raise FileNameException(msg='제가 생각하던 확장자가 아닙니다.')
-    # 이거는 좀 더 연구를 해야할 듯
-    # elif extension == '.pickle':
-    #     table = ddb_resource.Table(table_name)
-    #     with open(filename_in_local) as file, table.batch_writer() as batch:
-    #         pickle.load()
+        raise FileNameException(msg='허용되지 않은 확장자입니다.')
 
 
 class FileNameException(Exception):

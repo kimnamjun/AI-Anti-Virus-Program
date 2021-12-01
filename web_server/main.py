@@ -58,7 +58,7 @@ def predict():
         # save to aws
         my.aws.save_to_s3('./dataset/temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
         my.aws.save_to_dynamo('./dataset/temp/df_one.csv', 'AVA-01')
-        # my.aws.save_to_dynamo('./dataset/temp/df_two.csv', 'AVA-01')
+        my.aws.save_to_dynamo('./dataset/temp/df_two.pickle', 'AVA-01')
 
     except Exception as err:
         raise err
