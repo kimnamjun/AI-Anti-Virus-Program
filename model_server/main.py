@@ -25,6 +25,7 @@ model_two = my.modeling_two.create_model_with_tfidf_and_logistic_regression(trai
 my.aws.save_to_s3(train_df_two, 'ava-data-csv', 'two/train_df.pickle')
 my.aws.save_to_s3(test_df_two, 'ava-data-csv', 'two/train_df.pickle')
 my.aws.save_to_s3(props_two, 'ava-data-model', 'two/properties.pickle')
+my.aws.save_to_s3(vectorizer_two, 'ava-data-model', 'two/vectorizer.pickle')
 my.aws.save_to_s3(model_two, 'ava-data-model', 'two/model.pickle')
 
 print('모델 생성 종료', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

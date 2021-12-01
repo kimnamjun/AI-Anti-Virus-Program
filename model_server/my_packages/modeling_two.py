@@ -21,4 +21,4 @@ def create_model_with_tfidf_and_logistic_regression(train_df, test_df):
     acc = accuracy_score(y_test, y_pred)
     print('accuracy :', acc)
 
-    return model
+    return tfidf_vectorizer, model
