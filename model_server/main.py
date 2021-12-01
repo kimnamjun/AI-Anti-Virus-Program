@@ -20,7 +20,7 @@ my.aws.save_to_s3(model_one, 'ava-data-model', 'one/model.pickle')
 train_df_two = my.preprocessing_two.convert_json_to_df(train_filenames)
 test_df_two = my.preprocessing_two.convert_json_to_df(test_filenames)
 train_df_two, test_df_two, props_two = my.preprocessing_two.preprocess(train_df_two, test_df_two, max_length=300)
-model_two = my.modeling_two.create_model_with_tfidf_and_logistic_regression(train_df_two, test_df_two)
+vectorizer_two, model_two = my.modeling_two.create_model_with_tfidf_and_logistic_regression(train_df_two, test_df_two)
 
 my.aws.save_to_s3(train_df_two, 'ava-data-csv', 'two/train_df.pickle')
 my.aws.save_to_s3(test_df_two, 'ava-data-csv', 'two/train_df.pickle')
