@@ -2,9 +2,13 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
+from sklearn.svm import SVC
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.dummy import DummyClassifier
 
-
-def create_model_with_tfidf_and_logistic_regression(train_df, test_df):
+def create_tfidf_and_logistic_regression_model(train_df, test_df):
     train_df['corpus'] = [' '.join(imports) for imports in train_df['imports']]
     test_df['corpus'] = [' '.join(imports) for imports in test_df['imports']]
 
@@ -19,6 +23,6 @@ def create_model_with_tfidf_and_logistic_regression(train_df, test_df):
     y_pred = model.predict(x_test)
 
     acc = accuracy_score(y_test, y_pred)
-    print('accuracy :', acc)
+    print('SECOND model accuracy :', acc)
 
     return tfidf_vectorizer, model
