@@ -93,7 +93,7 @@ def create_attention_model(train_df, test_df):
 
     x_train = train_df['imports'].apply(lambda row: ' '.join(row)).to_list()
     x_test = test_df['imports'].apply(lambda row: ' '.join(row)).to_list()
-    y_train = np.array(train_df['label'].to_list(), dtype='float32')
+    y_train = np.array(train_df['label'], dtype='float32')
     y_test = np.array(test_df['label'], dtype='float32')
 
     train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(buffer_size).batch(batch_size)
