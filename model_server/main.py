@@ -22,11 +22,12 @@ try:
     train_df_two = my.preprocessing_two.convert_json_to_df(train_filenames)
     test_df_two = my.preprocessing_two.convert_json_to_df(test_filenames)
     train_df_two, test_df_two, props_two = my.preprocessing_two.preprocess(train_df_two, test_df_two, max_length=389)
-    model_two = my.model.create_attention_model(train_df_two, test_df_two)  # 모델 생성하면서 s3에 weight 저장 중
+    model_two = my.model.create_attention_model(train_df_two, test_df_two)
 
     my.aws.save_to_s3(train_df_two, 'ava-data-csv', 'two/train_df.pickle')
     my.aws.save_to_s3(test_df_two, 'ava-data-csv', 'two/train_df.pickle')
     my.aws.save_to_s3(props_two, 'ava-data-model', 'two/properties.pickle')
+    my.aws.save_weight_to_s3('./checkpoint/', 'ava-data-model', 'two/checkpoint/')
     print('두번째 모델 저장 완료', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 except:
