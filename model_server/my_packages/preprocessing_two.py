@@ -4,7 +4,6 @@ import json
 import boto3
 import pandas as pd
 
-
 s3 = boto3.resource('s3')
 pattern = re.compile(r'\W*(\w+)')
 
@@ -45,7 +44,6 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
     return pd.DataFrame(table)
 
 
-# 희소행렬방식을 사용한다면 max_length를 이용한 전처리가 필요한가도 재검토
 def preprocess(train_df, test_df, max_length=300) -> tuple:
     """
     API 함수 관련하여 데이터 전처리를 수행합니다.
