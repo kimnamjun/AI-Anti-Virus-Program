@@ -17,8 +17,6 @@ def save_to_s3(obj, bucket_name: str, filename: str):
         elif extension == '.pickle':
             with open(path + name, 'wb') as file:
                 pickle.dump(obj, file)
-        elif extension == '.h5':
-            obj.save(path + name)
 
         s3.upload_file(path + name, bucket_name, filename)
 
