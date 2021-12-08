@@ -20,9 +20,7 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
         obj = s3.Object('ava-data-json', file_name)
         file_obj = obj.get()['Body'].read()
         file = io.BytesIO(file_obj)
-        num = 0
-        while num < 100:
-            num += 1
+        while True:
             line = file.readline().decode('UTF-8')
             if not line:
                 break

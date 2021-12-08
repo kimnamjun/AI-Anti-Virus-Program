@@ -3,33 +3,36 @@ import os
 import csv
 import boto3
 import pickle
-import tensorflow as tf
 
-path = './temp/'
-os.makedirs(path, exist_ok=True)
+os.makedirs('./temp/', exist_ok=True)
+os.makedirs('./checkpoint/', exist_ok=True)
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
 ddb_resource = boto3.resource('dynamodb')
 
 
 def load_from_s3(filename: str, bucket_name: str):
-
     obj = s3_resource.Object(bucket_name, filename)
     file_obj = obj.get()['Body'].read()
     file = io.BytesIO(file_obj)
-    _, extension = os.path.splitext(filename)
-    if extension == '.pickle':
-        content = pickle.load(file)
-    elif extension == '.h5':
-        file.write(path + 'model.h5')
-        content = tf.keras.models.load_model(path + 'model.h5')
-        os.remove(path + 'model.h5')
+    content = pickle.load(file)
     return content
+
+
+def load_weights_from_s3(model, path: str, bucket_name: str):
+    checkpoint = s3_resource.Bucket(Bucket=bucket_name, Prefix='two/checkpoint/')
+    for obj in checkpoint.objects.all():
+        path, filename = os.path.split(obj.key)
+        checkpoint.download_file(obj.key, filename)
+
+    model.load_weights('./checkpoint')
+    return model
+
 
 
 def save_to_s3(obj, bucket_name: str, filename_in_s3: str):
     _, extension = os.path.splitext(filename_in_s3)
-    name = path + 'temp' + extension
+    name = './temp/temp' + extension
 
     if extension == '.csv':
         obj.to_csv(name, header=False, index=False)
