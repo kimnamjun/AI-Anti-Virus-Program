@@ -14,7 +14,7 @@ def create_model(train_filenames, test_filenames):
         my.aws.save_to_s3(train_df_two, 'ava-data-csv', 'two/train_df.pickle')
         my.aws.save_to_s3(test_df_two, 'ava-data-csv', 'two/train_df.pickle')
         my.aws.save_to_s3(props_two, 'ava-data-model', 'two/properties.pickle')
-        my.aws.save_weight_to_s3('./checkpoint/', 'ava-data-model', 'two/checkpoint/')
+        my.aws.save_to_s3(model_two, 'ava-data-model', 'two/model.h5')
 
     except Exception as err:
         print('두번째 모델 생성 실패', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
