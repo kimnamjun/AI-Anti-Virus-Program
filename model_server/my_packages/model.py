@@ -13,7 +13,7 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, Input, LSTM
 
-os.makedirs('./checkpoint/')
+os.makedirs('./checkpoint/', exist_ok=True)
 
 
 def create_voting_model(train_df, test_df):
