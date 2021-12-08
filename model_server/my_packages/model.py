@@ -122,4 +122,4 @@ def create_attention_model(train_df, test_df, epochs=2):
 
     model.fit(train_dataset, epochs=epochs, validation_data=test_dataset, callbacks=[checkpoint])
 
-    return model
+    return model, train_dataset

@@ -32,29 +32,23 @@ class BahdanauAttention(Model):
         return context_vector, attention_weights
 
 
-def create_my_model():
-    try:
-        vectorize_layer = TextVectorization(output_mode='int', output_sequence_length=400)
-        # vectorize_layer.adapt(train_dataset.map(lambda text, label: text))
-        sequence_input = Input(shape=(1,), dtype='string')
-        vector_input = vectorize_layer(sequence_input)
-        embedded_sequences = Embedding(len(vectorize_layer.get_vocabulary()), 128, mask_zero=True)(vector_input)
-        lstm = Bidirectional(LSTM(64, dropout=0.5, return_sequences=True))(embedded_sequences)
-        lstm, forward_h, forward_c, backward_h, backward_c \
-            = Bidirectional(LSTM(64, dropout=0.5, return_sequences=True, return_state=True))(lstm)
-        state_h = Concatenate()([forward_h, backward_h])
-        state_c = Concatenate()([forward_c, backward_c])
-        attention = BahdanauAttention(64)
-        context_vector, attention_weights = attention(lstm, state_h)
-        dense1 = Dense(20, activation='relu')(context_vector)
-        dropout = Dropout(0.5)(dense1)
-        output = Dense(1, activation='sigmoid')(dropout)
-        model = Model(inputs=sequence_input, outputs=output)
-        model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
-                      optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
-
-        return model
-
-    except Exception as err:
-        print('아마 모델 생성 중 adapt 문제일 듯?')
-        raise err
+def create_my_model(dataset):
+    vectorize_layer = TextVectorization(output_mode='int', output_sequence_length=400)
+    vectorize_layer.adapt(dataset.map(lambda text, label: text))
+    sequence_input = Input(shape=(1,), dtype='string')
+    vector_input = vectorize_layer(sequence_input)
+    embedded_sequences = Embedding(len(vectorize_layer.get_vocabulary()), 128, mask_zero=True)(vector_input)
+    lstm = Bidirectional(LSTM(64, dropout=0.5, return_sequences=True))(embedded_sequences)
+    lstm, forward_h, forward_c, backward_h, backward_c \
+        = Bidirectional(LSTM(64, dropout=0.5, return_sequences=True, return_state=True))(lstm)
+    state_h = Concatenate()([forward_h, backward_h])
+    state_c = Concatenate()([forward_c, backward_c])
+    attention = BahdanauAttention(64)
+    context_vector, attention_weights = attention(lstm, state_h)
+    dense1 = Dense(20, activation='relu')(context_vector)
+    dropout = Dropout(0.5)(dense1)
+    output = Dense(1, activation='sigmoid')(dropout)
+    model = Model(inputs=sequence_input, outputs=output)
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                  optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
+    return model

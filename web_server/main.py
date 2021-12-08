@@ -11,7 +11,8 @@ app = Flask(__name__)
 props_one = my.aws.load_from_s3('one/properties.pickle', 'ava-data-model')
 model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
 props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
-model_two = my.model.create_my_model()
+dataset_two = my.aws.load_from_s3('two/dataset.pickle', 'ava-data-model')
+model_two = my.model.create_my_model(dataset_two)
 model_two = my.aws.load_weights_from_s3(model_two, 'two/checkpoint/', 'ava-data-model')
 
 
