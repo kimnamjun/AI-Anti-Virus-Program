@@ -27,6 +27,11 @@ def save_to_s3(obj, bucket_name: str, filename: str):
             os.remove(path + 'temp.pickle')
 
 
+def save_weight_to_s3(path: str, bucket_name: str, file_dir: str):
+    for filename in os.listdir(path):
+        s3.upload_file(path + filename, bucket_name, file_dir + filename)
+
+
 class FileNameException(Exception):
     def __init__(self, msg='예상치 못한 예외 상황!'):
         self.msg = msg
