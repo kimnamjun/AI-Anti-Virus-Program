@@ -8,9 +8,11 @@ def create_model(train_filenames, test_filenames):
 
         train_df_two = my.preprocessing_two.convert_json_to_df(train_filenames)
         test_df_two = my.preprocessing_two.convert_json_to_df(test_filenames)
+        train_df_two = train_df_two.iloc[:100, :]
+        test_df_two = test_df_two.iloc[:100, :]
         train_df_two, test_df_two, props_two = my.preprocessing_two.preprocess(train_df_two, test_df_two, max_length=389)
         model_two = my.model.create_attention_model(train_df_two, test_df_two)
-
+        print(model_two)
         my.aws.save_to_s3(train_df_two, 'ava-data-csv', 'two/train_df.pickle')
         my.aws.save_to_s3(test_df_two, 'ava-data-csv', 'two/train_df.pickle')
         my.aws.save_to_s3(props_two, 'ava-data-model', 'two/properties.pickle')
