@@ -11,6 +11,9 @@ app = Flask(__name__)
 props_one = my.aws.load_from_s3('one/properties.pickle', 'ava-data-model')
 model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
 props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
+
+model_weights = my.aws.load_weight_from_s3('two/checkpoint', 'ava-data-model')
+
 vectorizer_two = my.aws.load_from_s3('two/vectorizer.pickle', 'ava-data-model')
 model_two = my.aws.load_from_s3('two/model.pickle', 'ava-data-model')
 print('Loaded successfully from s3')

@@ -1,13 +1,15 @@
-def predict_one(df, model):
-    x = df
-    y_pred = model.predict(x)
-    return y_pred
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, Input, LSTM
+
+
+def predict_one(df, model):
+    x = df
+    y_pred = model.predict(x)
+    return y_pred
+
 
 class BahdanauAttention(Model):
     def __init__(self, units):
