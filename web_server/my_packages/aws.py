@@ -3,18 +3,27 @@ import os
 import csv
 import boto3
 import pickle
+import tensorflow as tf
 
-path = './dataset/temp/'
+path = './temp/'
+os.makedirs(path, exist_ok=True)
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
 ddb_resource = boto3.resource('dynamodb')
 
 
 def load_from_s3(filename: str, bucket_name: str):
+
     obj = s3_resource.Object(bucket_name, filename)
     file_obj = obj.get()['Body'].read()
     file = io.BytesIO(file_obj)
-    content = pickle.load(file)
+    _, extension = os.path.splitext(filename)
+    if extension == '.pickle':
+        content = pickle.load(file)
+    elif extension == '.h5':
+        file.write(path + 'model.h5')
+        content = tf.keras.models.load_model(path + 'model.h5')
+        os.remove(path + 'model.h5')
     return content
 
 
@@ -62,8 +71,8 @@ def save_to_dynamo(filename_in_local: str, table_name: str):
             imports = df['imports']
             for irow in range(len(df.index)):
                 batch.put_item(Item={
-                    'sha256': sha256[i],
-                    'imports': imports[i]
+                    'sha256': sha256[irow],
+                    'imports': imports[irow]
                 })
     else:
         raise FileNameException(msg='허용되지 않은 확장자입니다.')

@@ -11,12 +11,7 @@ app = Flask(__name__)
 props_one = my.aws.load_from_s3('one/properties.pickle', 'ava-data-model')
 model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
 props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
-
-model_weights = my.aws.load_weight_from_s3('two/checkpoint', 'ava-data-model')
-
-vectorizer_two = my.aws.load_from_s3('two/vectorizer.pickle', 'ava-data-model')
-model_two = my.aws.load_from_s3('two/model.pickle', 'ava-data-model')
-print('Loaded successfully from s3')
+model_two = my.aws.load_from_s3('two/model.h5', 'ava-data-model')
 
 
 @app.route('/')
@@ -56,12 +51,14 @@ def predict():
             pickle.dump(df2, file)
 
         x2 = df2.drop(['sha256', 'label'], axis=1)
-        result2 = my.model.predict_two(x2, vectorizer_two, model_two)
+        result2 = my.model.predict_two(x2, model_two)
 
         # save to aws
         my.aws.save_to_s3('./dataset/temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
         my.aws.save_to_dynamo('./dataset/temp/df_one.csv', 'AVA-01')
         my.aws.save_to_dynamo('./dataset/temp/df_two.pickle', 'AVA-01')
+
+        result = result1 + result2
 
     except Exception as err:
         raise err
@@ -70,7 +67,7 @@ def predict():
         for filename in os.listdir(path):
             os.remove(path + filename)
 
-    return redirect(url_for('result.html', result1=result1, result2=result2), code=307)
+    return redirect(url_for('result.html', result=result), code=307)
 
 
 @app.route('/result', methods=['POST'])
