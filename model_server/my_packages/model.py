@@ -86,7 +86,7 @@ class BahdanauAttention(Model):
         return context_vector, attention_weights
 
 
-def create_attention_model(train_df, test_df):
+def create_attention_model(train_df, test_df, epochs=2):
     buffer_size = len(train_df.index)
     batch_size = 512
     checkpoint_path = './checkpoint/checkpoint.ckpt'
@@ -119,6 +119,6 @@ def create_attention_model(train_df, test_df):
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False), optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
     checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=True)
 
-    model.fit(train_dataset, epochs=10, validation_data=test_dataset, callbacks=[checkpoint])
+    model.fit(train_dataset, epochs=epochs, validation_data=test_dataset, callbacks=[checkpoint])
 
     return model
