@@ -116,7 +116,8 @@ def create_attention_model(train_df, test_df, epochs=2):
     output = Dense(1, activation='sigmoid')(dropout)
     model = Model(inputs=sequence_input, outputs=output)
 
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False), optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                  optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
     checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=True)
 
     model.fit(train_dataset, epochs=epochs, validation_data=test_dataset, callbacks=[checkpoint])

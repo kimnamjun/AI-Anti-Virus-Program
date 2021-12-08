@@ -50,6 +50,9 @@ def create_my_model():
         dropout = Dropout(0.5)(dense1)
         output = Dense(1, activation='sigmoid')(dropout)
         model = Model(inputs=sequence_input, outputs=output)
+        model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                      optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
+
         return model
 
     except Exception as err:
