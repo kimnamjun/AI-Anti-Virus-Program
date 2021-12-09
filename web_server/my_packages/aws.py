@@ -4,8 +4,6 @@ import csv
 import boto3
 import pickle
 
-os.makedirs('./temp/', exist_ok=True)
-os.makedirs('./checkpoint/', exist_ok=True)
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
 ddb_resource = boto3.resource('dynamodb')
