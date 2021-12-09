@@ -2,7 +2,7 @@ import my
 import os
 import pickle
 from datetime import datetime
-from flask import Flask, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for
 from waitress import serve
 from werkzeug.utils import secure_filename
 
@@ -23,7 +23,7 @@ def index():
 
 @app.route('/home')
 def goto_home():
-    return redirect('index')
+    return redirect(url_for('index'))
 
 
 @app.route('/demonstration')
