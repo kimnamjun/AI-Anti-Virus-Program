@@ -66,7 +66,7 @@
               <ul class="navbar-nav text-uppercase g-pos-rel g-font-weight-600 ml-auto">
                 <!-- Intro -->
                 <li class="nav-item active g-mx-10--lg g-mx-15--xl">
-                  <a href="{{ url_for('Home') }}" class="nav-link g-py-7 g-px-0">HOME</a>
+                  <a href="{{ url_for('goto_home') }}" class="nav-link g-py-7 g-px-0">HOME</a>
                 </li>
                 <!-- End Intro -->
 
@@ -78,7 +78,7 @@
                     <!-- Features - demo -->
                     <li class="dropdown-item ">
 <!--                      <a href="unify-main/home/home-default.html" class="nav-link">Demonstration</a>-->
-                      <a href="{{ url_for('Demonstration') }}" class="nav-link">Demonstration</a>
+                      <a href="{{ url_for('goto_demonstration') }}" class="nav-link">Demonstration</a>
                     </li>
                     <!-- End Features - demo -->
                   </ul>
@@ -92,10 +92,10 @@
                   <ul class="hs-sub-menu list-unstyled u-shadow-v11 g-brd-top g-brd-primary g-brd-top-2 g-min-width-220 g-mt-18 g-mt-8--lg--scrolling" id="nav-submenu--features" aria-labelledby="nav-link--features">
                     <!-- Features - Profiles -->
                     <li class="dropdown-item ">
-                      <a class="nav-link" href="{{ url_for('Profiles') }}">TEAM AVA</a>
+                      <a class="nav-link" href="{{ url_for('goto_profiles') }}">TEAM AVA</a>
                     </li>
                     <li class="dropdown-item ">
-                      <a class="nav-link" href="{{ url_for('Profiles') }}">TEAM AVA <span class="g-opacity-0_5">(full width)</span></a>
+                      <a class="nav-link" href="{{ url_for('goto_profiles') }}">TEAM AVA <span class="g-opacity-0_5">(full width)</span></a>
                     </li>
                     <!-- End Features - Profiles -->
                   </ul>
@@ -110,7 +110,7 @@
                   <ul class="hs-sub-menu list-unstyled u-shadow-v11 g-brd-top g-brd-primary g-brd-top-2 g-min-width-220 g-mt-18 g-mt-8--lg--scrolling" id="nav-submenu--features" aria-labelledby="nav-link--features">
                     <!-- Features - FAQ -->
                     <li class="dropdown-item ">
-                      <a class="nav-link" href="{{ url_for('FAQ') }}">FAQ</a>
+                      <a class="nav-link" href="{{ url_for('goto_FAQ') }}">FAQ</a>
                     </li>
                     <!-- End Features - FAQ -->
                   </ul>
@@ -124,7 +124,7 @@
                   <ul class="hs-sub-menu list-unstyled u-shadow-v11 g-brd-top g-brd-primary g-brd-top-2 g-min-width-220 g-mt-18 g-mt-8--lg--scrolling" id="nav-submenu--features" aria-labelledby="nav-link--features">
                     <!-- Features - contact -->
                     <li class="dropdown-item ">
-                      <a class="nav-link" href="{{ url_for('Contacts') }}">Phone & Email</a>
+                      <a class="nav-link" href="{{ url_for('goto_contacts') }}">Phone & Email</a>
                     </li>
                     <!-- End Features - contact -->
                   </ul>
