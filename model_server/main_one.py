@@ -1,5 +1,9 @@
 import my
+import os
 from datetime import datetime
+
+os.makedirs('./checkpoint/', exist_ok=True)
+os.makedirs('./temp/', exist_ok=True)
 
 
 def create_model(train_filenames, test_filenames):

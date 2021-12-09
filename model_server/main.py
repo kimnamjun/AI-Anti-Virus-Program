@@ -1,5 +1,9 @@
 import my
+import os
 from datetime import datetime
+
+os.makedirs('./checkpoint/', exist_ok=True)
+os.makedirs('./temp/', exist_ok=True)
 
 print('모델 생성 시작', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 

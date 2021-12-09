@@ -3,7 +3,6 @@ import pickle
 import boto3
 
 path = './temp/'
-os.makedirs(path, exist_ok=True)
 s3 = boto3.client('s3')
 
 

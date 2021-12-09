@@ -13,8 +13,6 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, Input, LSTM
 
-os.makedirs('./checkpoint/', exist_ok=True)
-
 
 def create_voting_model(train_df, test_df):
     train_df = train_df[train_df['label'] != -1].set_index('sha256')
@@ -122,4 +120,4 @@ def create_attention_model(train_df, test_df, epochs=2):
 
     model.fit(train_dataset, epochs=epochs, validation_data=test_dataset, callbacks=[checkpoint])
 
-    return model, train_dataset
+    return model, x_train.iloc[:10, :]
