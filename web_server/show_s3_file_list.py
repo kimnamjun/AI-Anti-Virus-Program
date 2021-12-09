@@ -7,4 +7,4 @@ for bucket in buckets:
     obj_list = s3.list_objects(Bucket=bucket)
     contents_list = obj_list['Contents']
     for content in contents_list:
-        print(bucket, content)
+        print(bucket, content['Key'])
