@@ -84,21 +84,9 @@ class BahdanauAttention(Model):
         return context_vector, attention_weights
 
 
-def create_attention_model(train_df, test_df, epochs=2):
-    buffer_size = len(train_df.index)
-    batch_size = 512
-    checkpoint_path = './checkpoint/checkpoint.ckpt'
-
-    x_train = train_df['imports'].apply(lambda row: ' '.join(row)).to_list()
-    x_test = test_df['imports'].apply(lambda row: ' '.join(row)).to_list()
-    y_train = np.array(train_df['label'], dtype='float32')
-    y_test = np.array(test_df['label'], dtype='float32')
-
-    train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(buffer_size).batch(batch_size)
-    test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(buffer_size).batch(batch_size)
-
+def create_my_model(dataset):
     vectorize_layer = TextVectorization(output_mode='int', output_sequence_length=400)
-    vectorize_layer.adapt(train_dataset.map(lambda text, label: text))
+    vectorize_layer.adapt(dataset.map(lambda text, label: text))
     sequence_input = Input(shape=(1,), dtype='string')
     vector_input = vectorize_layer(sequence_input)
     embedded_sequences = Embedding(len(vectorize_layer.get_vocabulary()), 128, mask_zero=True)(vector_input)
@@ -116,8 +104,20 @@ def create_attention_model(train_df, test_df, epochs=2):
 
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
                   optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
+    return model
+
+
+def create_attention_model(train_df, test_df, epochs=2, batch_size = 512):
+    checkpoint_path = './checkpoint/checkpoint.ckpt'
+
+    x_train = train_df['imports'].apply(lambda row: ' '.join(row)).to_list()
+    x_test = test_df['imports'].apply(lambda row: ' '.join(row)).to_list()
+    y_train = np.array(train_df['label'], dtype='float32')
+    y_test = np.array(test_df['label'], dtype='float32')
+    train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(batch_size)
+    test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(batch_size)
+
+    model = create_my_model(train_dataset)
     checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=True)
-
     model.fit(train_dataset, epochs=epochs, validation_data=test_dataset, callbacks=[checkpoint])
-
-    return model, x_train.iloc[:10, :]
+    return model
