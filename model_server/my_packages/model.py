@@ -68,25 +68,24 @@ def create_tfidf_and_logistic_regression_model(train_df, test_df):
     return tfidf_vectorizer, model
 
 
-class BahdanauAttention(Model):
-    def __init__(self, units):
-        super(BahdanauAttention, self).__init__()
-        self.W1 = Dense(units)
-        self.W2 = Dense(units)
-        self.V = Dense(1)
+def create_my_model(train_dataset):
+    class BahdanauAttention(Model):
+        def __init__(self, units):
+            super(BahdanauAttention, self).__init__()
+            self.W1 = Dense(units)
+            self.W2 = Dense(units)
+            self.V = Dense(1)
 
-    def call(self, values, query):
-        hidden_with_time_axis = tf.expand_dims(query, 1)
-        score = self.V(tf.nn.tanh(self.W1(values) + self.W2(hidden_with_time_axis)))
-        attention_weights = tf.nn.softmax(score, axis=1)
-        context_vector = attention_weights * values
-        context_vector = tf.reduce_sum(context_vector, axis=1)
-        return context_vector, attention_weights
+        def call(self, values, query):
+            hidden_with_time_axis = tf.expand_dims(query, 1)
+            score = self.V(tf.nn.tanh(self.W1(values) + self.W2(hidden_with_time_axis)))
+            attention_weights = tf.nn.softmax(score, axis=1)
+            context_vector = attention_weights * values
+            context_vector = tf.reduce_sum(context_vector, axis=1)
+            return context_vector, attention_weights
 
-
-def create_my_model(dataset):
     vectorize_layer = TextVectorization(output_mode='int', output_sequence_length=400)
-    vectorize_layer.adapt(dataset.map(lambda text, label: text))
+    vectorize_layer.adapt(train_dataset.map(lambda text, label: text))
     sequence_input = Input(shape=(1,), dtype='string')
     vector_input = vectorize_layer(sequence_input)
     embedded_sequences = Embedding(len(vectorize_layer.get_vocabulary()), 128, mask_zero=True)(vector_input)
@@ -107,7 +106,8 @@ def create_my_model(dataset):
     return model
 
 
-def create_attention_model(train_df, test_df, epochs=2, batch_size = 512):
+def create_attention_model(train_df, test_df, epochs=2):
+    batch_size = 512
     checkpoint_path = './checkpoint/checkpoint.ckpt'
 
     x_train = train_df['imports'].apply(lambda row: ' '.join(row)).to_list()

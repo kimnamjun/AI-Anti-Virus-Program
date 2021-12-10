@@ -4,7 +4,6 @@ import json
 import boto3
 import pandas as pd
 
-
 s3 = boto3.resource('s3')
 pattern = re.compile(r'\W*(\w+)')
 

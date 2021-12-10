@@ -17,13 +17,10 @@ def load_from_s3(filename: str, bucket_name: str):
     return content
 
 
-def load_weights_from_s3(model, path: str, bucket_name: str):
+def load_weights_from_s3(model, bucket_name: str):
     checkpoint = s3_resource.Bucket(name=bucket_name)
     for obj in checkpoint.objects.all():
         path, filename = os.path.split(obj.key)
-        print('path', path)
-        print('filename', filename)
-        print()
         if path.startswith('two/checkpoint'):
             checkpoint.download_file(obj.key, './checkpoint/' + filename)
 

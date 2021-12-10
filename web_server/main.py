@@ -1,11 +1,12 @@
 import my
 import os
 import pickle
+import numpy as np
+import tensorflow as tf
 from datetime import datetime
 from flask import Flask, redirect, render_template, request, url_for
 from waitress import serve
 from werkzeug.utils import secure_filename
-
 
 app = Flask(__name__)
 os.makedirs('./temp/', exist_ok=True)
@@ -14,9 +15,12 @@ os.makedirs('./checkpoint/', exist_ok=True)
 props_one = my.aws.load_from_s3('one/properties.pickle', 'ava-data-model')
 model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
 props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
-dataset_two = my.aws.load_from_s3('two/dataset.pickle', 'ava-data-model')
-model_two = my.model.create_my_model(dataset_two)
-model_two = my.aws.load_weights_from_s3(model_two, 'two/checkpoint/', 'ava-data-model')
+train_df_two = my.aws.load_from_s3('two/train_df.pickle', 'ava-data-model')
+x_train = train_df_two['imports'].apply(lambda row: ' '.join(row)).to_list()
+y_train = np.array(train_df_two['label'], dtype='float32')
+train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(512)
+model_two = my.model.create_my_model(train_dataset)
+model_two = my.aws.load_weights_from_s3(model_two, 'ava-data-model')
 
 
 @app.route('/')
@@ -79,14 +83,13 @@ def predict():
         with open('./temp/df_two.pickle', 'wb') as file:
             pickle.dump(df2, file)
 
-        x2 = df2.drop(['sha256', 'label'], axis=1)
-        result2 = my.model.predict_two(x2, model_two)
+        result2 = my.model.predict_two(df2, model_two)
 
         my.aws.save_to_s3('./temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
         my.aws.save_to_dynamo('./temp/df_one.csv', 'AVA-01')
         my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-01')
 
-        result = result1 + result2
+        result = result1 * 10 + result2
 
     except Exception as err:
         raise err
