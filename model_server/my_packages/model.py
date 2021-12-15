@@ -112,5 +112,8 @@ def create_attention_model(train_df, test_df, epochs=2):
     test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(buffer_size).batch(batch_size)
 
     model = MyModel(train_dataset)
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                  optimizer=tf.keras.optimizers.Adam(1e-4),
+                  metrics=['accuracy'])
     model.fit(train_dataset, epochs=epochs, validation_data=test_dataset)
     return model
