@@ -8,10 +8,12 @@ train_filenames = [f'train_features_{i}.jsonl' for i in range(6)]
 test_filenames = ['test_features.jsonl']
 
 try:
-    print('첫번째 모델 생성 시작', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    print('전처리 시작', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     train_df_one, train_df_two = my.preprocess.convert_json_to_df(train_filenames)
     test_df_one, test_df_two = my.preprocess.convert_json_to_df(test_filenames)
+
+    print('전처리 완료\n첫번째 모델 생성 시작', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     train_df_one, props_one = my.preprocess.reduce_features_for_train(train_df_one, n_pca=9)
     test_df_one = my.preprocess.reduce_features_for_test(test_df_one, props_one)
