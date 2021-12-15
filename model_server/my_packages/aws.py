@@ -19,7 +19,7 @@ def save_to_s3(obj, bucket_name: str, filename: str):
         s3.upload_file(path + basename, bucket_name, filename)
     elif basename.endswith('model'):
         obj.save(path + 'model')
-        for dirpath, dirnames, filenames in os.walk(path):
+        for dirpath, dirnames, filenames in os.walk(path + 'model/'):
             for dirname in dirnames:
                 os.makedirs(os.path.join(dirpath, dirname), exist_ok=True)
             for filename in filenames:
