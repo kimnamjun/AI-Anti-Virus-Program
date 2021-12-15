@@ -1,8 +1,6 @@
 import my
 import os
 import pickle
-import numpy as np
-import tensorflow as tf
 from datetime import datetime
 from flask import Flask, redirect, render_template, request, url_for
 from waitress import serve
@@ -10,17 +8,13 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 os.makedirs('./temp/', exist_ok=True)
-os.makedirs('./checkpoint/', exist_ok=True)
+os.makedirs('./model/', exist_ok=True)
 
-props_one = my.aws.load_from_s3('one/properties.pickle', 'ava-data-model')
-model_one = my.aws.load_from_s3('one/model.pickle', 'ava-data-model')
-props_two = my.aws.load_from_s3('two/properties.pickle', 'ava-data-model')
-train_df_two = my.aws.load_from_s3('two/train_df.pickle', 'ava-data-csv')
-x_train = train_df_two['imports'].apply(lambda row: ' '.join(row)).to_list()
-y_train = np.array(train_df_two['label'], dtype='float32')
-train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(512)
-model_two = my.model.create_my_model(train_dataset)
-model_two = my.aws.load_weights_from_s3(model_two, 'ava-data-model')
+props_one = my.aws.load_pickle_from_s3('one/properties.pickle', 'ava-data-model')
+model_one = my.aws.load_pickle_from_s3('one/model.pickle', 'ava-data-model')
+props_two = my.aws.load_pickle_from_s3('two/properties.pickle', 'ava-data-model')
+train_df_two = my.aws.load_pickle_from_s3('two/train_df.pickle', 'ava-data-csv')
+model_two = my.aws.load_model_from_s3('two/model', 'ava-data-model')
 
 
 @app.route('/')

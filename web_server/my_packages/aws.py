@@ -3,13 +3,15 @@ import os
 import csv
 import boto3
 import pickle
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
 ddb_resource = boto3.resource('dynamodb')
 
 
-def load_from_s3(filename: str, bucket_name: str):
+def load_pickle_from_s3(filename: str, bucket_name: str):
     obj = s3_resource.Object(bucket_name, filename)
     file_obj = obj.get()['Body'].read()
     file = io.BytesIO(file_obj)
@@ -17,14 +19,17 @@ def load_from_s3(filename: str, bucket_name: str):
     return content
 
 
-def load_weights_from_s3(model, bucket_name: str):
+def load_model_from_s3(filepath, bucket_name: str):
     checkpoint = s3_resource.Bucket(name=bucket_name)
     for obj in checkpoint.objects.all():
         path, filename = os.path.split(obj.key)
-        if path.startswith('two/checkpoint'):
-            checkpoint.download_file(obj.key, './checkpoint/' + filename)
+        if path.startswith('two/model'):
+            checkpoint.download_file(obj.key, './model/' + filename)
 
-    model.load_weights('./checkpoint/checkpoint')
+    model = load_model('./model')
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                  optimizer=tf.keras.optimizers.Adam(1e-4),
+                  metrics=['accuracy'])
     return model
 
 

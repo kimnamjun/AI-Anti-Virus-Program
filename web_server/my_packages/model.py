@@ -16,42 +16,37 @@ def predict_two(df, model):
     return y_pred
 
 
-def create_my_model(train_dataset):
-    class BahdanauAttention(Model):
-        def __init__(self, units):
-            super(BahdanauAttention, self).__init__()
-            self.W1 = Dense(units)
-            self.W2 = Dense(units)
-            self.V = Dense(1)
+class MyModel(Model):
+    def __init__(self, train_dataset):
+        super(MyModel, self).__init__()
+        self.dataset = train_dataset
+        self.text_vectorization = TextVectorization(output_mode='int', output_sequence_length=400)
+        self.text_vectorization.adapt(self.dataset.map(lambda text, label: text))
+        self.embedding = Embedding(len(self.text_vectorization.get_vocabulary()), 128, mask_zero=True)
+        self.bidirectional1 = Bidirectional(LSTM(64, dropout=0.5, return_sequences = True))
+        self.bidirectional2 = Bidirectional (LSTM(64, dropout=0.5, return_sequences=True, return_state=True))
+        self.concatenate_c = Concatenate()
+        self. concatenate_h = Concatenate()
+        self.w1 = Dense(64)
+        self.w2 = Dense(64)
+        self.v = Dense(1)
+        self.dense1 = Dense(20, activation='relu')
+        self.dropout = Dropout(0.5)
+        self.dense2 = Dense(1, activation='sigmoid')
 
-        def call(self, values, query):
-            hidden_with_time_axis = tf.expand_dims(query, 1)
-            score = self.V(tf.nn.tanh(self.W1(values) + self.W2(hidden_with_time_axis)))
-            attention_weights = tf.nn.softmax(score, axis=1)
-            context_vector = attention_weights * values
-            context_vector = tf.reduce_sum(context_vector, axis=1)
-            return context_vector, attention_weights
-
-    vectorize_layer = TextVectorization(output_mode='int', output_sequence_length=400)
-    vectorize_layer.adapt(train_dataset.map(lambda text, label: text))
-    sequence_input = Input(shape=(1,), dtype='string')
-    vector_input = vectorize_layer(sequence_input)
-    embedded_sequences = Embedding(len(vectorize_layer.get_vocabulary()), 128, mask_zero=True)(vector_input)
-    lstm = Bidirectional(LSTM(64, dropout=0.5, return_sequences=True))(embedded_sequences)
-    lstm, forward_h, forward_c, backward_h, backward_c \
-        = Bidirectional(LSTM(64, dropout=0.5, return_sequences=True, return_state=True))(lstm)
-    state_h = Concatenate()([forward_h, backward_h])
-    state_c = Concatenate()([forward_c, backward_c])
-    attention = BahdanauAttention(64)
-    context_vector, attention_weights = attention(lstm, state_h)
-    dense1 = Dense(20, activation='relu')(context_vector)
-    dropout = Dropout(0.5)(dense1)
-    output = Dense(1, activation='sigmoid')(dropout)
-    model = Model(inputs=sequence_input, outputs=output)
-
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
-                  optimizer=tf.keras.optimizers.Adam(1e-4), metrics=['accuracy'])
-    return model
+    def call(self, x):
+        x = self.text_vectorization(x)
+        x = self.embedding(x)
+        x = self.bidirectional1(x)
+        x, fh, fc, bh, bc = self.bidirectional2(x)
+        h = self.concatenate_h((fh, bh))
+        c = self.concatenate_c((fc, bc))
+        x = tf.nn.softmax(self.v(tf.nn.tanh(self.w1(x) + self.w2(tf.expand_dims(h, 1)))), axis=1) * x
+        x = tf.reduce_sum(x, axis=1)
+        x = self.dense1(x)
+        x = self.dropout(x)
+        x = self.dense2(x)
+        return x
 
 
 def predict_with_attention_model(df, model):
