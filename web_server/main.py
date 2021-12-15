@@ -66,7 +66,8 @@ def predict():
         with open(json_file_name, 'w') as file:
             file.write(json_file)
 
-        df1 = my.preprocessing_one.convert_json_to_df(json_file_name)
+        df1, df2 = my.preprocessing_one.convert_json_to_df(json_file_name)
+
         df1 = my.preprocessing_one.reduce_features(df1, props_one)
         df1.to_csv('./temp/df_one.csv', index=False)
 
