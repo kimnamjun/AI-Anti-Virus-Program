@@ -7,28 +7,24 @@ s3 = boto3.client('s3')
 
 
 def save_to_s3(obj, bucket_name: str, filename: str):
-    try:
-        _, extension = os.path.splitext(filename)
-        name = 'temp' + extension
+    _, extension = os.path.splitext(filename)
+    basename = os.path.basename(filename)
 
-        if extension == '.csv':
-            obj.to_csv(path + name, header=False, index=False)
-        elif extension == '.pickle':
-            with open(path + name, 'wb') as file:
-                pickle.dump(obj, file)
-
-        s3.upload_file(path + name, bucket_name, filename)
-
-    finally:
-        if os.path.isfile(path + 'temp.csv'):
-            os.remove(path + 'temp.csv')
-        if os.path.isfile(path + 'temp.pickle'):
-            os.remove(path + 'temp.pickle')
-
-
-def save_weights_to_s3(path: str, bucket_name: str, file_dir: str):
-    for filename in os.listdir(path):
-        s3.upload_file(path + filename, bucket_name, file_dir + filename)
+    if extension == '.csv':
+        obj.to_csv(path + basename, header=False, index=False)
+        s3.upload_file(path + basename, bucket_name, filename)
+    elif extension == '.pickle':
+        with open(path + basename, 'wb') as file:
+            pickle.dump(obj, file)
+        s3.upload_file(path + basename, bucket_name, filename)
+    elif basename.endswith('model'):
+        obj.save(path + 'model')
+        for dirpath, dirnames, filenames in os.walk(path):
+            for dirname in dirnames:
+                os.makedirs(os.path.join(dirpath, dirname), exist_ok=True)
+            for filename in filenames:
+                fn = os.path.join(dirpath, filename).replace('\\', '/')
+                s3.upload_file(fn, bucket_name, 'two' + fn[1:])
 
 
 class FileNameException(Exception):
