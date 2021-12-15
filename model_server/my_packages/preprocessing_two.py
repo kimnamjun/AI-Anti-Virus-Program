@@ -17,12 +17,11 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
     table = {'sha256': list(), 'label': list(), 'imports': list()}
 
     for file_name in file_names:
-        obj = s3.Object('ava-data-json', file_name)
+        obj = s3.Object('ava-data-json-main', file_name)
         file_obj = obj.get()['Body'].read()
         file = io.BytesIO(file_obj)
         num = 0
         while num < 100:
-            num += 1
             line = file.readline().decode('UTF-8')
             if not line:
                 break
@@ -30,6 +29,7 @@ def convert_json_to_df(file_names: list) -> pd.DataFrame:
 
             if line_json['label'] == -1:
                 continue
+            num += 1
             table['label'].append(line_json['label'])
             table['sha256'].append(line_json['sha256'])
 
