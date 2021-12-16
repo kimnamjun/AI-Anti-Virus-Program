@@ -3,6 +3,7 @@ import os
 import csv
 import boto3
 import pickle
+import shutil
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
@@ -20,12 +21,13 @@ def load_pickle_from_s3(filename: str, bucket_name: str):
     return content
 
 
-def load_model_from_s3(filepath, bucket_name: str):
-    checkpoint = s3_resource.Bucket(name=bucket_name)
-    for obj in checkpoint.objects.all():
-        path, filename = os.path.split(obj.key)
-        if path.startswith('two/model'):
-            checkpoint.download_file(obj.key, './model/' + filename)
+def load_model_from_s3(prefix, bucket_name: str):
+    shutil.rmtree('./model/')
+    bucket = s3_resource.Bucket(name=bucket_name)
+    for obj in bucket.objects.all():
+        if obj.key.startswith(prefix):
+            os.makedirs('./model/' + obj.key[len(prefix)+1:], exist_ok=True)
+            bucket.download_file(obj.key, './model/' + obj.key[len(prefix)+1:])
 
     model = load_model('./model')
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
@@ -35,6 +37,10 @@ def load_model_from_s3(filepath, bucket_name: str):
 
 
 def save_to_s3(obj, bucket_name: str, filename: str):
+    if isinstance(obj, str):
+        s3_client.upload_file(obj, bucket_name, filename)
+        return
+
     _, extension = os.path.splitext(filename)
     basename = os.path.basename(filename)
 

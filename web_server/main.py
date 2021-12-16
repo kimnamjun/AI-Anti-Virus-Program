@@ -72,13 +72,13 @@ def predict():
         df1.to_csv('./temp/df_one.csv', index=False)
 
         x1 = df1.drop(['sha256', 'label'], axis=1)
-        result1 = my.model.predict_one(x1, model_one)
+        result1 = my.model.predict_one(x1, model_one)[0]
 
         df2 = my.preprocess.preprocess_api(df2, props_two)
         with open('./temp/df_two.pickle', 'wb') as file:
             pickle.dump(df2, file)
 
-        result2 = my.model.predict_two(df2, model_two)
+        result2 = my.model.predict_two(df2, model_two)[0]
 
         my.aws.save_to_dynamo('./temp/df_one.csv', 'AVA-01')
         my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-02')

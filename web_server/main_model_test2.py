@@ -15,7 +15,7 @@ json_file = my.file2pe.convert_file_to_pe(filename_path)
 json_filename = f'_{filename}_{tm}'.replace('.', '_') + '.json'
 with open(f'./temp/{json_filename}', 'w') as file:
     file.write(json_file)
-    my.aws.save_to_s3(file, 'ava-data-json-main', json_filename)
+my.aws.save_to_s3(f'./temp/{json_filename}', 'ava-data-json-main', json_filename)
 
 df1, df2 = my.preprocess.convert_json_to_df(json_filename)
 

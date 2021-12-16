@@ -7,6 +7,10 @@ s3_client = boto3.client('s3')
 
 
 def save_to_s3(obj, bucket_name: str, filename: str):
+    if isinstance(obj, str):
+        s3_client.upload_file(obj, bucket_name, filename)
+        return
+
     _, extension = os.path.splitext(filename)
     basename = os.path.basename(filename)
 
