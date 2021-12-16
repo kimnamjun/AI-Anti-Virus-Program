@@ -61,25 +61,25 @@ def predict():
         json_file = my.file2pe.convert_file_to_pe(filename_path)
         if not json_file:
             return render_template('/error', error_code=1, error_msg='파일 변환 실패')
-        json_file_name = './temp/temp.json'
-        with open(json_file_name, 'w') as file:
+        json_filename = f'_{filename}_{tm}'.replace('.', '_') + '.json'
+        with open(f'./temp/{json_filename}', 'w') as file:
             file.write(json_file)
+        my.aws.save_to_s3(f'./temp/{json_filename}', 'ava-data-json-main', json_filename)
 
-        df1, df2 = my.preprocessing_one.convert_json_to_df(json_file_name)
+        df1, df2 = my.preprocess.convert_json_to_df(f'_{filename}_{tm}.json')
 
-        df1 = my.preprocessing_one.reduce_features(df1, props_one)
+        df1 = my.preprocess.reduce_features(df1, props_one)
         df1.to_csv('./temp/df_one.csv', index=False)
 
         x1 = df1.drop(['sha256', 'label'], axis=1)
         result1 = my.model.predict_one(x1, model_one)
 
-        df2 = my.preprocessing_two.preprocess(json_file_name, props_two)
+        df2 = my.preprocess.preprocess_api(df2, props_two)
         with open('./temp/df_two.pickle', 'wb') as file:
             pickle.dump(df2, file)
 
         result2 = my.model.predict_two(df2, model_two)
 
-        my.aws.save_to_s3('./temp/temp.json', 'ava-data-json-main', f'_{filename}_{tm}.json')
         my.aws.save_to_dynamo('./temp/df_one.csv', 'AVA-01')
         my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-02')
 
