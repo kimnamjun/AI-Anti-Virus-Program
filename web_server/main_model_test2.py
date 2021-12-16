@@ -19,12 +19,16 @@ my.aws.save_to_s3(f'./temp/{json_filename}', 'ava-data-json-main', json_filename
 
 df1, df2 = my.preprocess.convert_json_to_df(json_filename)
 
-props_one = my.aws.load_pickle_from_s3('one/properties.pickle', 'ava-data-model-main')
+props_two = my.aws.load_pickle_from_s3('two/properties.pickle', 'ava-data-model-main')
 
-df1 = my.preprocess.reduce_features(df1, props_one)
-df1.to_csv('./temp/df_one.csv', index=False)
+df2 = my.preprocess.preprocess_api(df2, props_two)
+with open('./temp/df_two.pickle', 'wb') as file:
+    pickle.dump(df2, file)
 
-model_one = my.aws.load_pickle_from_s3('one/voting_model.pickle', 'ava-data-model-main')
+print('모델 부르는 중')
+model_two = my.aws.load_model_from_s3('two/model', 'ava-data-model-main')
+print('모델 부르기 끝')
 
-x1 = df1.drop(['sha256', 'label'], axis=1)
-result1 = my.model.predict_one(x1, model_one)
+result2 = my.model.predict_two(df2, model_two)
+
+print(f'RESULT is {result2}')

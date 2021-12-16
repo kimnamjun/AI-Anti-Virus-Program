@@ -22,9 +22,6 @@ def convert_json_to_df(file_name: str):
             break
         line_json = json.loads(line)
 
-        if line_json['label'] == -1:
-            continue
-
         table1['label'].append(line_json['label'])
         table1['sha256'].append(line_json['sha256'])
         table1['g_exports'].append(line_json['general']['exports'])

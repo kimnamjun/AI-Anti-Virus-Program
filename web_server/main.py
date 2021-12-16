@@ -66,7 +66,7 @@ def predict():
             file.write(json_file)
         my.aws.save_to_s3(f'./temp/{json_filename}', 'ava-data-json-main', json_filename)
 
-        df1, df2 = my.preprocess.convert_json_to_df(f'_{filename}_{tm}.json')
+        df1, df2 = my.preprocess.convert_json_to_df(json_filename)
 
         df1 = my.preprocess.reduce_features(df1, props_one)
         df1.to_csv('./temp/df_one.csv', index=False)
