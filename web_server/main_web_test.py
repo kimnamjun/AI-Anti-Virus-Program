@@ -36,7 +36,7 @@ def goto_contacts():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    result = 123456
+    result = 12
     return redirect(url_for('result.html', result=result), code=307)
 
 
