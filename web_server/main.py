@@ -11,9 +11,8 @@ os.makedirs('./temp/', exist_ok=True)
 os.makedirs('./model/', exist_ok=True)
 
 props_one = my.aws.load_pickle_from_s3('one/properties.pickle', 'ava-data-model-main')
-model_one = my.aws.load_pickle_from_s3('one/model.pickle', 'ava-data-model-main')
+model_one = my.aws.load_pickle_from_s3('one/voting_model.pickle', 'ava-data-model-main')
 props_two = my.aws.load_pickle_from_s3('two/properties.pickle', 'ava-data-model-main')
-train_df_two = my.aws.load_pickle_from_s3('two/train_df.pickle', 'ava-data-csv-main')
 model_two = my.aws.load_model_from_s3('two/model', 'ava-data-model-main')
 
 
