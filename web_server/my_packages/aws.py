@@ -23,11 +23,14 @@ def load_pickle_from_s3(filename: str, bucket_name: str):
 
 def load_model_from_s3(prefix, bucket_name: str):
     shutil.rmtree('./model/')
-    bucket = s3_resource.Bucket(name=bucket_name)
-    for obj in bucket.objects.all():
-        if obj.key.startswith(prefix):
-            os.makedirs('./model/' + obj.key[len(prefix)+1:], exist_ok=True)
-            bucket.download_file(obj.key, './model/' + obj.key[len(prefix)+1:])
+    os.makedirs('./model/variables/', exist_ok=True)
+
+    s3_client.download_file('ava-data-model-main', 'two/model/keras_metadata.pb', './model/keras_metadata.pb')
+    s3_client.download_file('ava-data-model-main', 'two/model/saved_model.pb', './model/saved_model.pb')
+    s3_client.download_file('ava-data-model-main', 'two/model/variables/variables.index',
+                            './model/variables/variables.index')
+    s3_client.download_file('ava-data-model-main', 'two/model/variables/variables.data-00000-of-00001',
+                            './model/variables/variables.data-00000-of-00001')
 
     model = load_model('./model')
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
@@ -59,7 +62,6 @@ def save_to_s3(obj, bucket_name: str, filename: str):
             for filename in filenames:
                 fn = os.path.join(dirpath, filename).replace('\\', '/')
                 s3_client.upload_file(fn, bucket_name, 'two' + fn[6:])  # '/temp/' 제거
-
 
 
 def save_to_dynamo(filename_in_local: str, table_name: str):

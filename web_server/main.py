@@ -78,7 +78,7 @@ def predict():
         with open('./temp/df_two.pickle', 'wb') as file:
             pickle.dump(df2, file)
 
-        result2 = my.model.predict_two(df2, model_two)[0]
+        result2 = my.model.predict_with_attention_model(df2, model_two)[0]
 
         my.aws.save_to_dynamo('./temp/df_one.csv', 'AVA-01')
         my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-02')
