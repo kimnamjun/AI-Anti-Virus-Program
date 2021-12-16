@@ -6,6 +6,7 @@ import pickle
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
+path = './temp/'
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
 ddb_resource = boto3.resource('dynamodb')
@@ -33,19 +34,26 @@ def load_model_from_s3(filepath, bucket_name: str):
     return model
 
 
-def save_to_s3(obj, bucket_name: str, filename_in_s3: str):
-    _, extension = os.path.splitext(filename_in_s3)
-    name = './temp/temp' + extension
+def save_to_s3(obj, bucket_name: str, filename: str):
+    _, extension = os.path.splitext(filename)
+    basename = os.path.basename(filename)
 
     if extension == '.csv':
-        obj.to_csv(name, header=False, index=False)
+        obj.to_csv(path + basename, header=False, index=False)
+        s3_client.upload_file(path + basename, bucket_name, filename)
     elif extension == '.pickle':
-        with open(name, 'wb') as file:
+        with open(path + basename, 'wb') as file:
             pickle.dump(obj, file)
-    else:
-        FileNameException(msg=f'이게 왜 안 돼! {extension}')
+        s3_client.upload_file(path + basename, bucket_name, filename)
+    elif basename.endswith('model'):
+        obj.save(path + 'model')
+        for dirpath, dirnames, filenames in os.walk(path + 'model/'):
+            for dirname in dirnames:
+                os.makedirs(os.path.join(dirpath, dirname), exist_ok=True)
+            for filename in filenames:
+                fn = os.path.join(dirpath, filename).replace('\\', '/')
+                s3_client.upload_file(fn, bucket_name, 'two' + fn[6:])  # '/temp/' 제거
 
-    s3_client.upload_file(name, bucket_name, filename_in_s3)
 
 
 def save_to_dynamo(filename_in_local: str, table_name: str):
