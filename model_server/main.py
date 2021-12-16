@@ -27,7 +27,7 @@ try:
     print('첫번째 모델 저장 완료\n두번째 모델 생성 시작', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     train_df_two, test_df_two, props_two = my.preprocess.preprocess_api(train_df_two, test_df_two, max_length=389)
-    model_two = my.model.create_attention_model(train_df_two, test_df_two, epochs=5)
+    model_two = my.model.create_attention_model(train_df_two, test_df_two, epochs=2)
 
     my.aws.save_to_s3(train_df_two, 'ava-data-csv-main', 'two/train_df.pickle')
     my.aws.save_to_s3(test_df_two, 'ava-data-csv-main', 'two/test_df.pickle')
