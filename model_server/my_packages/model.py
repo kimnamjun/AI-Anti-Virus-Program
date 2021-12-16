@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from datetime import datetime
 from pycaret.classification import *
 
 from sklearn.metrics import accuracy_score
@@ -9,9 +10,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from tensorflow.keras import Model
+from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, LSTM
-
 
 def create_voting_model(train_df, test_df):
     train_df = train_df[train_df['label'] != -1].set_index('sha256')
@@ -115,5 +116,6 @@ def create_attention_model(train_df, test_df, epochs=2):
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
                   optimizer=tf.keras.optimizers.Adam(1e-4),
                   metrics=['accuracy'])
-    model.fit(train_dataset, epochs=epochs, validation_data=test_dataset)
+    tensorboard = TensorBoard(log_dir='tensorboard/{}'.format(datetime.now().strftime('%Y-%m-%d-%H-%M-%S')))
+    model.fit(train_dataset, epochs=epochs, validation_data=test_dataset, callbacks=[tensorboard])
     return model
