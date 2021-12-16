@@ -72,7 +72,7 @@ def convert_file_to_pe(file_name: str) -> str:
 
         with open(file_name, 'rb') as file:
             js['sha256'] = hashlib.sha256(file.read()).hexdigest()
-
+        print('JSON is', js)
         return json.dumps(js, sort_keys=True)
 
     except Exception:
