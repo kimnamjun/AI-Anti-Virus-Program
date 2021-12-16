@@ -24,7 +24,7 @@ def save_to_s3(obj, bucket_name: str, filename: str):
                 os.makedirs(os.path.join(dirpath, dirname), exist_ok=True)
             for filename in filenames:
                 fn = os.path.join(dirpath, filename).replace('\\', '/')
-                s3.upload_file(fn, bucket_name, 'two' + fn[1:])
+                s3.upload_file(fn, bucket_name, 'two' + fn[6:])  # '/temp/' 제거
 
 
 class FileNameException(Exception):

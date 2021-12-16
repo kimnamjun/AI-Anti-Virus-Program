@@ -10,11 +10,11 @@ app = Flask(__name__)
 os.makedirs('./temp/', exist_ok=True)
 os.makedirs('./model/', exist_ok=True)
 
-props_one = my.aws.load_pickle_from_s3('one/properties.pickle', 'ava-data-model')
-model_one = my.aws.load_pickle_from_s3('one/model.pickle', 'ava-data-model')
-props_two = my.aws.load_pickle_from_s3('two/properties.pickle', 'ava-data-model')
-train_df_two = my.aws.load_pickle_from_s3('two/train_df.pickle', 'ava-data-csv')
-model_two = my.aws.load_model_from_s3('two/model', 'ava-data-model')
+props_one = my.aws.load_pickle_from_s3('one/properties.pickle', 'ava-data-model-main')
+model_one = my.aws.load_pickle_from_s3('one/model.pickle', 'ava-data-model-main')
+props_two = my.aws.load_pickle_from_s3('two/properties.pickle', 'ava-data-model-main')
+train_df_two = my.aws.load_pickle_from_s3('two/train_df.pickle', 'ava-data-csv-main')
+model_two = my.aws.load_model_from_s3('two/model', 'ava-data-model-main')
 
 
 @app.route('/')
@@ -80,9 +80,9 @@ def predict():
 
         result2 = my.model.predict_two(df2, model_two)
 
-        my.aws.save_to_s3('./temp/temp.json', 'ava-data-json', f'{filename}_{tm}.json')
+        my.aws.save_to_s3('./temp/temp.json', 'ava-data-json-main', f'_{filename}_{tm}.json')
         my.aws.save_to_dynamo('./temp/df_one.csv', 'AVA-01')
-        my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-01')
+        my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-02')
 
         result = result1 * 10 + result2
 
