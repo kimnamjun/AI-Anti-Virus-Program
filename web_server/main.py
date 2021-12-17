@@ -92,9 +92,7 @@ def predict():
 
 @app.route('/result', methods=['POST'])
 def result():
-    result1 = request.form['result1']
-    result2 = request.form['result2']
-    return render_template('result.html', result1=result1, result2=result2)
+    return render_template('result.html', result=result)
 
 
 @app.errorhandler(404)
