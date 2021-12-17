@@ -27,22 +27,22 @@ def goto_home():
 
 @app.route('/demonstration')
 def goto_demonstration():
-    return render_template('/unify-main/home/home-default.html')
+    return render_template('/AVA/home/home-default.html')
 
 
 @app.route('/profiles')
 def goto_profiles():
-    return render_template('/unify-main/pages/page-profile-users-2.html')
+    return render_template('/AVA/pages/page-profile-users-2.html')
 
 
 @app.route('/FAQ')
 def goto_FAQ():
-    return render_template('/unify-main/pages/page-faq-2.html')
+    return render_template('/AVA/pages/page-faq-2.html')
 
 
 @app.route('/contacts')
 def goto_contacts():
-    return render_template('/unify-main/pages/page-contacts-2.html')
+    return render_template('/AVA/pages/page-contacts-2.html')
 
 
 @app.route('/predict', methods=['POST'])
@@ -73,12 +73,11 @@ def predict():
 
         df2 = my.preprocess.preprocess_api(df2, props_two)
         result2 = my.model.predict_two(df2, model_two)[0][0]
-        result2 = 0 if result2 < 0.5 else 1
 
         my.aws.save_to_dynamo(df1, 'AVA-01')
         my.aws.save_to_dynamo(df2, 'AVA-02')
 
-        result = result1 * 10 + result2
+        result = '정상 파일' if ((result1 + result2) / 2) < 0.5 else '악성 파일'
 
     except Exception as err:
         raise err
