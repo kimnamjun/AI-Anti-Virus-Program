@@ -1,6 +1,5 @@
 import my
 import os
-import pickle
 from datetime import datetime
 from flask import Flask, redirect, render_template, request, url_for
 from waitress import serve
@@ -74,11 +73,12 @@ def predict():
 
         df2 = my.preprocess.preprocess_api(df2, props_two)
         result2 = my.model.predict_two(df2, model_two)[0][0]
+        result2 = 0 if result2 < 0.5 else 1
 
         my.aws.save_to_dynamo(df1, 'AVA-01')
         my.aws.save_to_dynamo(df2, 'AVA-02')
 
-        result = result1 * 100 + result2
+        prediction = result1 * 10 + result2
 
     except Exception as err:
         raise err
@@ -87,7 +87,7 @@ def predict():
         for filename in os.listdir(path):
             os.remove(path + filename)
 
-    return redirect(url_for('result.html', result=result), code=307)
+    return redirect(url_for('result.html', result=prediction), code=307)
 
 
 @app.route('/result', methods=['POST'])
