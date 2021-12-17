@@ -1,7 +1,4 @@
-import tensorflow as tf
-from tensorflow.keras import Model
-from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
-from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, LSTM
+
 
 
 def predict_one(df, model):
@@ -16,7 +13,12 @@ def predict_two(df, model):
     return y_pred
 
 
-# 참고
+""" 모델 참고
+import tensorflow as tf
+from tensorflow.keras import Model
+from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
+from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, LSTM
+
 class MyModel(Model):
     def __init__(self, train_dataset):
         super(MyModel, self).__init__()
@@ -48,3 +50,4 @@ class MyModel(Model):
         x = self.dropout(x)
         x = self.dense2(x)
         return x
+"""
