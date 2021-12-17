@@ -1,6 +1,3 @@
-
-
-
 def predict_one(df, model):
     x_test = df
     y_pred = model.predict(x_test)
