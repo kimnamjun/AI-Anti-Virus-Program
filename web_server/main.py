@@ -78,7 +78,7 @@ def predict():
         my.aws.save_to_dynamo(df1, 'AVA-01')
         my.aws.save_to_dynamo(df2, 'AVA-02')
 
-        prediction = result1 * 10 + result2
+        result = result1 * 10 + result2
 
     except Exception as err:
         raise err
@@ -87,7 +87,7 @@ def predict():
         for filename in os.listdir(path):
             os.remove(path + filename)
 
-    return redirect(url_for('result.html', result=prediction), code=307)
+    return redirect(url_for('result', result=result), code=307)
 
 
 @app.route('/result', methods=['POST'])
@@ -103,6 +103,11 @@ def error(error):
 @app.errorhandler(405)
 def error(error):
     return render_template('/error.html', error_code=405, error_msg='허용되지 않은 요청'), 405
+
+
+@app.errorhandler(500)
+def error(error):
+    return render_template('/error.html', error_code=500, error_msg='서버 문제'), 500
 
 
 print('Flask app is running')
