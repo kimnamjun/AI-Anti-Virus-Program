@@ -12,7 +12,7 @@ os.makedirs('./model/', exist_ok=True)
 props_one = my.aws.load_pickle_from_s3('one/properties.pickle', 'ava-data-model-main')
 model_one = my.aws.load_pickle_from_s3('one/voting_model.pickle', 'ava-data-model-main')
 props_two = my.aws.load_pickle_from_s3('two/properties.pickle', 'ava-data-model-main')
-model_two = my.aws.load_model_from_s3('two/model', 'ava-data-model-main')
+model_two = my.aws.load_model_from_s3_temp()
 
 
 @app.route('/')
@@ -87,12 +87,24 @@ def predict():
         for filename in os.listdir(path):
             os.remove(path + filename)
 
-    return redirect(url_for('goto_result', result=result), code=307)
+    return redirect(url_for('goto_result', result=result), code=302)
 
 
 @app.route('/result', methods=['POST'])
 def goto_result():
-    result = request.form['result']
+    print('Redirect')
+    try:
+        result = request.form['result']
+        print('A is', result)
+    except:
+        pass
+
+    try:
+        result = request.args['result']
+        print('B is', result)
+    except:
+        pass
+
     return render_template('result.html', result=result)
 
 

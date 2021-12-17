@@ -23,7 +23,7 @@ def load_pickle_from_s3(filename: str, bucket_name: str):
     return content
 
 
-def load_model_from_s3(prefix, bucket_name: str):
+def load_model_from_s3():
     shutil.rmtree('./model/')
     os.makedirs('./model/variables/', exist_ok=True)
 
@@ -34,6 +34,14 @@ def load_model_from_s3(prefix, bucket_name: str):
     s3_client.download_file('ava-data-model-main', 'two/model/variables/variables.data-00000-of-00001',
                             './model/variables/variables.data-00000-of-00001')
 
+    model = load_model('./model')
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                  optimizer=tf.keras.optimizers.Adam(1e-4),
+                  metrics=['accuracy'])
+    return model
+
+
+def load_model_from_s3_temp():
     model = load_model('./model')
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
                   optimizer=tf.keras.optimizers.Adam(1e-4),
