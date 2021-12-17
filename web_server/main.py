@@ -87,11 +87,12 @@ def predict():
         for filename in os.listdir(path):
             os.remove(path + filename)
 
-    return redirect(url_for('result', result=result), code=307)
+    return redirect(url_for('goto_result', result=result), code=307)
 
 
 @app.route('/result', methods=['POST'])
-def result():
+def goto_result():
+    result = request.form['result']
     return render_template('result.html', result=result)
 
 
