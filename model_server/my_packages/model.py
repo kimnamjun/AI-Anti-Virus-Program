@@ -14,6 +14,7 @@ from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, LSTM
 
+
 def create_voting_model(train_df, test_df):
     train_df = train_df[train_df['label'] != -1].set_index('sha256')
     test_df = test_df[test_df['label'] != -1].set_index('sha256')
