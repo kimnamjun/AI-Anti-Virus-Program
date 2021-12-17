@@ -69,21 +69,16 @@ def predict():
         df1, df2 = my.preprocess.convert_json_to_df(json_filename)
 
         df1 = my.preprocess.reduce_features(df1, props_one)
-        df1.to_csv('./temp/df_one.csv', index=False)
-
         x1 = df1.drop(['sha256', 'label'], axis=1)
         result1 = my.model.predict_one(x1, model_one)[0]
 
         df2 = my.preprocess.preprocess_api(df2, props_two)
-        with open('./temp/df_two.pickle', 'wb') as file:
-            pickle.dump(df2, file)
+        result2 = my.model.predict_two(df2, model_two)[0][0]
 
-        result2 = my.model.predict_with_attention_model(df2, model_two)[0]
+        my.aws.save_to_dynamo(df1, 'AVA-01')
+        my.aws.save_to_dynamo(df2, 'AVA-02')
 
-        my.aws.save_to_dynamo('./temp/df_one.csv', 'AVA-01')
-        my.aws.save_to_dynamo('./temp/df_two.pickle', 'AVA-02')
-
-        result = result1 * 10 + result2
+        result = result1 * 100 + result2
 
     except Exception as err:
         raise err

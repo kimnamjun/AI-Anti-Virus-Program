@@ -5,8 +5,6 @@ from pycaret.classification import *
 
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import VotingClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from tensorflow.keras import Model
@@ -47,26 +45,6 @@ def create_voting_model(train_df, test_df):
     print('voting model accuracy :', acc)
 
     return voting_model
-
-
-def create_tfidf_and_logistic_regression_model(train_df, test_df):
-    train_df['corpus'] = [' '.join(imports) for imports in train_df['imports']]
-    test_df['corpus'] = [' '.join(imports) for imports in test_df['imports']]
-
-    tfidf_vectorizer = TfidfVectorizer()
-    x_train = tfidf_vectorizer.fit_transform(train_df['corpus'])
-    x_test = tfidf_vectorizer.transform(test_df['corpus'])
-    y_train = train_df['label']
-    y_test = test_df['label']
-
-    model = LogisticRegression()
-    model.fit(x_train, y_train)
-    y_pred = model.predict(x_test)
-
-    acc = accuracy_score(y_test, y_pred)
-    print('logistic regression model accuracy :', acc)
-
-    return tfidf_vectorizer, model
 
 
 class MyModel(Model):

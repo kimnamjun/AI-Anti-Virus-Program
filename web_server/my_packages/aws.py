@@ -1,9 +1,11 @@
 import io
 import os
-import csv
 import boto3
 import pickle
 import shutil
+from decimal import Decimal
+
+import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
@@ -64,45 +66,39 @@ def save_to_s3(obj, bucket_name: str, filename: str):
                 s3_client.upload_file(fn, bucket_name, 'two' + fn[6:])  # '/temp/' 제거
 
 
-def save_to_dynamo(filename_in_local: str, table_name: str):
-    _, extension = os.path.splitext(filename_in_local)
-    name = 'temp' + extension
+def save_to_dynamo(df: pd.DataFrame, table_name: str):
+    table = ddb_resource.Table(table_name)
 
-    if extension == '.csv':
-        table = ddb_resource.Table(table_name)
-        with open(filename_in_local) as file, table.batch_writer() as batch:
-            for row in csv.DictReader(file):
+    if table_name == 'AVA-01':
+        sha256, label = df['sha256'].tolist(), df['label'].tolist()
+        pca1, pca2, pca3 = df['pca1'].tolist(), df['pca2'].tolist(), df['pca3'].tolist()
+        pca4, pca5, pca6 = df['pca4'].tolist(), df['pca5'].tolist(), df['pca6'].tolist()
+        pca7, pca8, pca9 = df['pca7'].tolist(), df['pca8'].tolist(), df['pca9'].tolist()
+
+        with table.batch_writer() as batch:
+            for i in range(len(df.index)):
                 batch.put_item(Item={
-                    'sha256': row['sha256'],
-                    'pca1': row['pca1'],
-                    'pca2': row['pca2'],
-                    'pca3': row['pca3'],
-                    'pca4': row['pca4'],
-                    'pca5': row['pca5'],
-                    'pca6': row['pca6'],
-                    'pca7': row['pca7'],
-                    'pca8': row['pca8'],
-                    'pca9': row['pca9'],
-                    'label': row['label']
+                    'sha256': sha256[i],
+                    'pca1': Decimal(str(pca1[i])),
+                    'pca2': Decimal(str(pca2[i])),
+                    'pca3': Decimal(str(pca3[i])),
+                    'pca4': Decimal(str(pca4[i])),
+                    'pca5': Decimal(str(pca5[i])),
+                    'pca6': Decimal(str(pca6[i])),
+                    'pca7': Decimal(str(pca7[i])),
+                    'pca8': Decimal(str(pca8[i])),
+                    'pca9': Decimal(str(pca9[i])),
+                    'label': label[i]
                 })
-    elif extension == '.pickle':
-        table = ddb_resource.Table(table_name)
-        with open(filename_in_local) as file, table.batch_writer() as batch:
-            df = pickle.load(file)
-            sha256 = df['sha256']
-            imports = df['imports']
-            for irow in range(len(df.index)):
+
+    elif table_name == 'AVA-02':
+        sha256, label = df['sha256'].tolist(), df['label'].tolist()
+        imports = df['imports'].apply(lambda row: ' '.join(row)).to_list()
+
+        with table.batch_writer() as batch:
+            for i in range(len(df.index)):
                 batch.put_item(Item={
-                    'sha256': sha256[irow],
-                    'imports': imports[irow]
+                    'sha256': sha256[i],
+                    'imports': imports[i],
+                    'label': label[i]
                 })
-    else:
-        raise FileNameException(msg='허용되지 않은 확장자입니다.')
-
-
-class FileNameException(Exception):
-    def __init__(self, msg='예상치 못한 예외 상황!'):
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg

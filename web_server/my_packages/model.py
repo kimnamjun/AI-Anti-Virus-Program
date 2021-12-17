@@ -1,21 +1,22 @@
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
-from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, Input, LSTM
+from tensorflow.keras.layers import Bidirectional, Concatenate, Dense, Dropout, Embedding, LSTM
 
 
 def predict_one(df, model):
-    x = df
-    y_pred = model.predict(x)
+    x_test = df
+    y_pred = model.predict(x_test)
     return y_pred
 
 
 def predict_two(df, model):
-    x = df['imports'].apply(lambda row: ' '.join(row)).to_list()
-    y_pred = model.predict(x)
+    x_test = df['imports'].apply(lambda row: ' '.join(row)).to_list()
+    y_pred = model.predict(x_test)
     return y_pred
 
 
+# 참고
 class MyModel(Model):
     def __init__(self, train_dataset):
         super(MyModel, self).__init__()
@@ -47,9 +48,3 @@ class MyModel(Model):
         x = self.dropout(x)
         x = self.dense2(x)
         return x
-
-
-def predict_with_attention_model(df, model):
-    x_test = df['imports'].apply(lambda row: ' '.join(row)).to_list()
-    y_pred = model.predict(x_test)
-    return y_pred

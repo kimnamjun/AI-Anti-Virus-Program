@@ -147,8 +147,8 @@ def reduce_features_for_test(df: pd.DataFrame, props: tuple) -> pd.DataFrame:
     pca_df = pd.DataFrame(pca_arr, index=df.index, columns=[f'pca{i+1}' for i in range(n_pca)])
     pca_df['label'] = label.tolist()
     pca_df = pca_df.reset_index()
-
     return pca_df
+
 
 def preprocess_api(train_df, test_df, max_length=300) -> tuple:
     # max_length 이상의 함수를 갖는 행 버리기
