@@ -73,11 +73,17 @@ def predict():
 
         df2 = my.preprocess.preprocess_api(df2, props_two)
         result2 = my.model.predict_two(df2, model_two)[0][0]
+        result2 = 0 if result2 < 0.5 else 1
 
         my.aws.save_to_dynamo(df1, 'AVA-01')
         my.aws.save_to_dynamo(df2, 'AVA-02')
 
-        result = '정상 파일' if ((result1 + result2) / 2) < 0.5 else '악성 파일'
+        if result1 + result2 == 0:
+            result = '정상'
+        elif result1 + result2 == 1:
+            result = '주의'
+        elif result1 + result2 == 2:
+            result = '위험'
 
     except Exception as err:
         raise err
