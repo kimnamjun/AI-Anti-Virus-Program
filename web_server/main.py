@@ -84,6 +84,8 @@ def predict():
             result = '주의'
         elif result1 + result2 == 2:
             result = '위험'
+        else:
+            result = '?'
 
     except Exception as err:
         raise err
