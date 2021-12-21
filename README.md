@@ -13,6 +13,7 @@
 ---
 
 ![웹.mp4](./source/웹.png)
+![시연.mp4](https://player.vimeo.com/video/658296788)
 ![시연.mp4](./source/시연.mp4)
 
 프로젝트 종료(2021.12.22) 이후 지원받은 AWS 계정 회수로 인하여 **운영 불가**
